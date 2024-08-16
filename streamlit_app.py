@@ -20,7 +20,9 @@ else:
     # Button to execute configuration.py
     if st.button('Run Configuration'):
         try:
-            result = subprocess.run(['python', 'configuration.py'], capture_output=True, text=True)
+            # Call the Streamlit script using `streamlit run`
+            result = subprocess.run(['streamlit', 'run', 'configuration.py'], capture_output=True, text=True)
+            # Display results
             st.success("Configuration executed successfully.")
             st.write("Stdout:", result.stdout)
             st.write("Stderr:", result.stderr)
