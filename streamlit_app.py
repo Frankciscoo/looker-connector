@@ -210,7 +210,6 @@ else:
         """,
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
-    pip install gspread
     import gspread
     from google.oauth2 import service_account
     from google.auth.transport.requests import Request
