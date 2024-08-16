@@ -211,10 +211,25 @@ else:
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
 
+    import gspread
     from google.oauth2.credentials import Credentials
     from google_auth_oauthlib.flow import Flow
-    from google.auth.transport.requests import Request
     import json
+    
+    def read_google_sheet(credentials):
+        # Use gspread to authorize with the credentials
+        gc = gspread.authorize(credentials)
+        
+        # Open the spreadsheet by title
+        spreadsheet = gc.open('Your Spreadsheet Title')  # Replace with your spreadsheet title
+    
+        # Select the first worksheet
+        worksheet = spreadsheet.sheet1
+        
+        # Get all values in the worksheet
+        records = worksheet.get_all_records()
+    
+        return records
     
     def main():
         st.subheader("Google Authentication")
@@ -242,7 +257,8 @@ else:
                     scopes=[
                         "https://www.googleapis.com/auth/userinfo.profile",
                         "https://www.googleapis.com/auth/userinfo.email",
-                        "openid"
+                        "openid",
+                        "https://www.googleapis.com/auth/spreadsheets.readonly"  # Add Google Sheets scope
                     ],
                 )
                 flow.redirect_uri = redirect_uri
@@ -262,7 +278,15 @@ else:
                     st.success("Authentication successful")
                     st.write("Access Token:", credentials.token)
     
-                    # Continue with the rest of your app logic here
+                    # Store the credentials in session state for future use
+                    st.session_state.credentials = credentials
+    
+                    # After authentication, read the spreadsheet
+                    records = read_google_sheet(credentials)
+    
+                    # Display the records
+                    st.write("Spreadsheet Data:")
+                    st.write(records)
     
             except json.JSONDecodeError as e:
                 st.error(f"Error decoding JSON file: {e}")
