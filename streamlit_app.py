@@ -110,7 +110,6 @@ else:
 
     # Display the configuration summary
     if st.button('Show Configuration Summary'):
-        st.write("## Configuration Summary")
         st.write(f"**Company Domain:** {company_domain}")
         st.write(f"**Number of Looks:** {number_of_looks}")
         st.write(f"**Look IDs List:** {looks_list}")
