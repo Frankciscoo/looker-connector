@@ -19,9 +19,10 @@ exclude_filters_assignment = []
 # Show title and description
 st.title("🔗 Looker-gsheets connector")
 st.write("XXX Write explanation")
-st.divider()
+st.header("API Credentials", divider=True)
 
 # Ask user for their Looker API client_id and client_secret via `st.text_input`
+
 client_id = st.text_input("**Looker API :blue[Client ID]**", type="password")
 client_secret = st.text_input("**Looker API :blue[Client Secret]**", type="password")
 
