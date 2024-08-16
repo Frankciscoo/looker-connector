@@ -119,10 +119,10 @@ else:
     def assign_look_ids_to_groups():
         global group_filter_0_assignment, group_filter_1_assignment, group_filter_2_assignment, exclude_filters_assignment
         for index, look_id in enumerate(looks_list):
-            assign_filters = st.radio(f"Do you want to assign filters for Look ID {look_id}?", ('Yes', 'No'))
+            assign_filters = st.radio(f"Do you want to :blue[assign filters] for :blue[Look ID {look_id}]?", ('Yes', 'No'))
             if assign_filters == 'No':
                 continue
-            group_choice = st.selectbox(f"Assign Look ID {look_id} to a group:", options=[0, 1, 2, 3], format_func=lambda x: {0: "Group 0 Filters", 1: "Group 1 Filters", 2: "Group 2 Filters", 3: "Exclude from filters"}[x])
+            group_choice = st.selectbox(f":blue[Assign Look ID {look_id}] to a :blue[group]:", options=[0, 1, 2, 3], format_func=lambda x: {0: "Group 0 Filters", 1: "Group 1 Filters", 2: "Group 2 Filters", 3: "Exclude from filters"}[x])
             if group_choice == 0:
                 group_filter_0_assignment.append(index)
             elif group_choice == 1:
