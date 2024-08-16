@@ -92,6 +92,7 @@ else:
                 group_filters[group_num][filter_key] = {'filter': [filter_input], 'value': [value_input]}
 
     def assign_look_ids_to_groups():
+        global group_filter_0_assignment, group_filter_1_assignment, group_filter_2_assignment, exclude_filters_assignment
         for index, look_id in enumerate(looks_list):
             assign_filters = st.radio(f"Do you want to assign filters for Look ID {look_id}?", ('Yes', 'No'))
             if assign_filters == 'No':
@@ -125,7 +126,17 @@ else:
         gather_tab_names()
         range_name = st.text_input("Enter the cell where the data should be pasted in the sheets (e.g., 'B2'):").strip()
 
-    # Display the configuration summary
+    # Gather user input for filters and values
+    gather_filters_and_values()
+    st.write("Three groups of filters can be created (Group 0, Group 1, and Group 2). You will need to determine the number of filters to include in each group:")
+    gather_filters_and_values_group(0)
+    gather_filters_and_values_group(1)
+    gather_filters_and_values_group(2)
+
+    # Assign look IDs to groups
+    assign_look_ids_to_groups()
+
+    # Display the configuration summary and filter adjustments
     if st.button('Show Configuration Summary'):
         st.markdown(
         f"""
@@ -136,6 +147,14 @@ else:
             <p><strong>Gsheet Title:</strong> {title}</p>
             <p><strong>Tab Names:</strong> {tab_names}</p>
             <p><strong>Cell Range for Pasting Data:</strong> {range_name}</p>
+            <p><strong>Filters Applied to All Looks:</strong> {all_filter}</p>
+            <p><strong>Group 0 Filters:</strong> {group_filter_0}</p>
+            <p><strong>Group 1 Filters:</strong> {group_filter_1}</p>
+            <p><strong>Group 2 Filters:</strong> {group_filter_2}</p>
+            <p><strong>Group 0 Assignments:</strong> {group_filter_0_assignment}</p>
+            <p><strong>Group 1 Assignments:</strong> {group_filter_1_assignment}</p>
+            <p><strong>Group 2 Assignments:</strong> {group_filter_2_assignment}</p>
+            <p><strong>Exclude Filters Assignments:</strong> {exclude_filters_assignment}</p>
         </div>
         """,
         unsafe_allow_html=True)
