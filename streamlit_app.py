@@ -29,7 +29,6 @@ if not client_id or not client_secret:
     st.info("Please add your Looker API Client ID and Client Secret to continue.", icon="🗝️")
 else:
     st.success("Credentials provided successfully!")
-st.divider()
 
     # Load configuration function
     def load_config_from_file(file_content):
