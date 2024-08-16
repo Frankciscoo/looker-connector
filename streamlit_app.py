@@ -212,54 +212,20 @@ else:
     st.header("Checks!", divider=True)
     
     import streamlit as st
-    import json
     import gspread
-    import pandas as pd
-    from google.oauth2.service_account import Credentials
-    from gspread_dataframe import get_as_dataframe
+    from oauth2client.service_account import ServiceAccountCredentials
+    import json
     
-    # Authenticate using the uploaded service account JSON file
-    def authenticate_with_google(credentials_json):
-        creds = Credentials.from_service_account_info(
-            credentials_json,
-            scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-        )
-        gc = gspread.authorize(creds)
-        return gc
+    # Ask user to upload the JSON key file
+    uploaded_file = st.file_uploader("Upload your JSON key file", type="json")
     
-    # Main function
-    def main():
-        st.title("Google Sheets Data Access with Streamlit")
+    if uploaded_file is not None:
+        # Load the JSON file content
+        creds_dict = json.load(uploaded_file)
         
-        # Upload the service account JSON file
-        uploaded_file = st.file_uploader("Upload your Google Cloud service account JSON file", type="json")
-        
-        if uploaded_file:
-            # Read and decode the uploaded file
-            credentials_data = uploaded_file.read().decode('utf-8')
-            credentials_json = json.loads(credentials_data)
-            
-            # Authenticate and get the Google Sheets client
-            gc = authenticate_with_google(credentials_json)
-            
-            # Open a Google Sheet by name or URL
-            sh = gc.open("Your Google Sheet Name")
+        # Define the scope
+        scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
     
-            # Select the first sheet
-            worksheet = sh.get_worksheet(0)
-    
-            # Get data as DataFrame
-            df = get_as_dataframe(worksheet)
-            
-            # Display the DataFrame
-            st.write(df)
-        else:
-            st.warning("Please upload your service account JSON file to proceed.")
-    
-    if __name__ == "__main__":
-        main()
-        
-        if __name__ == "__main__":
-            main()
-    
-        
+        # Authorize using the uploaded credentials
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+        client = gspread.authorize(creds)
