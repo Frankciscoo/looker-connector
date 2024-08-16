@@ -151,7 +151,7 @@ else:
         range_name = st.text_input("Enter the cell where the data should be pasted in the sheets (e.g., 'B2'):").strip()
 
     # Handle filters input or upload
-    filters_file = st.radio("Do you have a filters file to upload?", ('Yes', 'No'))
+    filters_file = st.radio("**Do you have a filters file to upload?**", ('Yes', 'No'))
 
     if filters_file == 'Yes':
         filters_uploaded_file = st.file_uploader("Upload filters document (.txt)", type=("txt"))
