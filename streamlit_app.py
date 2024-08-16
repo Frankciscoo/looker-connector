@@ -20,13 +20,10 @@ else:
     # Button to execute configuration.py
     if st.button('Run Configuration'):
         try:
-            result = st.insert('configuration.py')
+            # Run the Python script and capture the output
+            result = subprocess.run(['python', 'configuration.py'], capture_output=True, text=True)
             st.success("Configuration executed successfully.")
             st.write(result.stdout)
         except subprocess.CalledProcessError as e:
             st.error("An error occurred while running the configuration.")
             st.write(e.stderr)
-
-
-
-    
