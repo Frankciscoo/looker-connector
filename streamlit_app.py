@@ -217,27 +217,25 @@ else:
     import json
     
     def update_google_sheet(credentials):
-        # Use gspread to authorize with the credentials
         gc = gspread.authorize(credentials)
-        
-        # Open the spreadsheet by title
         spreadsheet = gc.open('Your Spreadsheet Title')  # Replace with your spreadsheet title
-    
-        # Select the first worksheet
         worksheet = spreadsheet.sheet1
         
         # Example: Update a cell
-        worksheet.update('A1', 'Updated Value')  # Update cell A1 with "Updated Value"
-    
+        worksheet.update('A1', 'Updated Value')
+        
         # Example: Append a new row
-        worksheet.append_row(['New', 'Row', 'Data'])  # Append a new row to the worksheet
-    
+        worksheet.append_row(['New', 'Row', 'Data'])
+        
         return worksheet.get_all_records()
     
     def main():
         st.subheader("Google Sheets Editor")
     
-        # File uploader to upload JSON credentials
+        # Clear previous session state if needed
+        if 'credentials' in st.session_state:
+            del st.session_state['credentials']
+    
         uploaded_file = st.file_uploader("Upload your JSON credentials file", type="json")
     
         if uploaded_file is not None:
@@ -261,8 +259,8 @@ else:
                         "https://www.googleapis.com/auth/userinfo.profile",
                         "https://www.googleapis.com/auth/userinfo.email",
                         "openid",
-                        "https://www.googleapis.com/auth/spreadsheets",  # Full access to Google Sheets
-                        "https://www.googleapis.com/auth/drive.file"       # Access to Google Drive files you have opened or created with this app
+                        "https://www.googleapis.com/auth/spreadsheets",
+                        "https://www.googleapis.com/auth/drive.file"
                     ],
                 )
                 flow.redirect_uri = redirect_uri
@@ -284,7 +282,6 @@ else:
     
                     st.session_state.credentials = credentials
     
-                    # Now allow editing the spreadsheet
                     records = update_google_sheet(credentials)
     
                     st.write("Updated Spreadsheet Data:")
