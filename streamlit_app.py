@@ -1,12 +1,4 @@
 import streamlit as st
-import requests
-import pandas as pd
-import numpy as np
-import gspread
-import json
-from gspread_dataframe import get_as_dataframe, set_with_dataframe
-from googleapiclient.discovery import build
-from google.oauth2 import service_account
 
 
 # Initial declarations
