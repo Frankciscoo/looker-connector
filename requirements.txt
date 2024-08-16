@@ -3,5 +3,6 @@ gspread
 requests
 pandas
 numpy
-gspread_dataframe
+gspread
 st-gsheets-connection
+oauth2client
