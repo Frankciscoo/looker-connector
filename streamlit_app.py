@@ -210,3 +210,47 @@ else:
         """,
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
+
+    from google.oauth2 import id_token
+    from google.auth.transport import requests
+    import json
+    
+    def main():
+        st.title("Your Streamlit App")
+        
+        # Google Authentication
+        st.subheader("Google Authentication")
+        
+        # File uploader to upload JSON credentials
+        uploaded_file = st.file_uploader("Upload your JSON credentials file", type="json")
+        
+        client_id = None
+        if uploaded_file is not None:
+            try:
+                json_data = json.load(uploaded_file)
+                client_id = json_data.get("client_id")
+                if not client_id:
+                    st.error("client_id not found in the JSON file.")
+            except json.JSONDecodeError as e:
+                st.error(f"Error decoding JSON file: {e}")
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
+        
+        if client_id:
+            token = st.text_input("Enter your Google ID token", type="password")
+            if st.button("Authenticate"):
+                try:
+                    idinfo = id_token.verify_oauth2_token(token, requests.Request(), client_id)
+                    if idinfo['aud'] != client_id:
+                        raise ValueError("Invalid client ID")
+                    st.success(f"Authentication successful: {idinfo['name']}")
+                    # Continue with the rest of your app logic here
+                except ValueError as e:
+                    st.error("Authentication failed")
+                    st.error(e)
+        
+        # Other app content
+        # ...
+    
+    if __name__ == "__main__":
+        main()
