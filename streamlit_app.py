@@ -1,6 +1,4 @@
 import streamlit as st
-import os
-import tempfile
 
 # Initial declarations
 number_of_looks = None
@@ -46,6 +44,32 @@ else:
         title = config_dict.get('title', '')
         tab_names = config_dict.get('tab_names', '').split(',')
         range_name = config_dict.get('range_name', '')
+        return True
+
+    def load_filters_from_file(file_content):
+        global all_filter, group_filter_0, group_filter_1, group_filter_2
+        filters = file_content.splitlines()
+        filter_dict = {}
+        current_group = None
+
+        for line in filters:
+            if line.startswith("Group"):
+                current_group = int(line.split()[1])
+                continue
+            if '=' in line:
+                key, value = line.split('=', 1)
+                key = key.strip()
+                value = value.strip().split(',')
+                if current_group is None:
+                    filter_dict[key] = {'filter': value, 'value': value}
+                else:
+                    if current_group == 0:
+                        group_filter_0[key] = {'filter': value, 'value': value}
+                    elif current_group == 1:
+                        group_filter_1[key] = {'filter': value, 'value': value}
+                    elif current_group == 2:
+                        group_filter_2[key] = {'filter': value, 'value': value}
+        all_filter = filter_dict
         return True
 
     # Functions for gathering user input
@@ -126,17 +150,29 @@ else:
         gather_tab_names()
         range_name = st.text_input("Enter the cell where the data should be pasted in the sheets (e.g., 'B2'):").strip()
 
-    # Gather user input for filters and values
-    gather_filters_and_values()
-    st.write("Three groups of filters can be created (Group 0, Group 1, and Group 2). You will need to determine the number of filters to include in each group:")
-    gather_filters_and_values_group(0)
-    gather_filters_and_values_group(1)
-    gather_filters_and_values_group(2)
+    # Handle filters input or upload
+    filters_file = st.radio("Do you have a filters file to upload?", ('Yes', 'No'))
 
-    # Assign look IDs to groups
-    assign_look_ids_to_groups()
+    if filters_file == 'Yes':
+        filters_uploaded_file = st.file_uploader("Upload filters document (.txt)", type=("txt"))
+        if filters_uploaded_file:
+            filters_content = filters_uploaded_file.read().decode('utf-8')
+            if load_filters_from_file(filters_content):
+                st.success("Filters loaded successfully.")
+            else:
+                st.error("Failed to load filters. Please provide the details manually.")
+    else:
+        st.write("No filters file uploaded. You may manually input filter data.")
+        gather_filters_and_values()
+        st.write("Three groups of filters can be created (Group 0, Group 1, and Group 2). You will need to determine the number of filters to include in each group:")
+        gather_filters_and_values_group(0)
+        gather_filters_and_values_group(1)
+        gather_filters_and_values_group(2)
 
-    # Display the configuration summary and filter adjustments
+        # Assign look IDs to groups
+        assign_look_ids_to_groups()
+
+    # Display the configuration summary
     if st.button('Show Configuration Summary'):
         st.markdown(
         f"""
@@ -147,7 +183,7 @@ else:
             <p><strong>Gsheet Title:</strong> {title}</p>
             <p><strong>Tab Names:</strong> {tab_names}</p>
             <p><strong>Cell Range for Pasting Data:</strong> {range_name}</p>
-            <p><strong>Filters Applied to All Looks:</strong> {all_filter}</p>
+            <p><strong>Filters Applied to all Looks:</strong> {all_filter}</p>
             <p><strong>Group 0 Filters:</strong> {group_filter_0}</p>
             <p><strong>Group 1 Filters:</strong> {group_filter_1}</p>
             <p><strong>Group 2 Filters:</strong> {group_filter_2}</p>
