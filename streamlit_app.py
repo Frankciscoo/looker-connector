@@ -20,12 +20,18 @@ else:
     # Button to execute configuration.py
     if st.button('Run Configuration'):
         try:
-            # Call the Streamlit script using `streamlit run`
             result = subprocess.run(['streamlit', 'run', 'configuration.py'], capture_output=True, text=True)
-            # Display results
-            st.write("Stdout:", result.stdout)
-            st.write("Stderr:", result.stderr)
-            st.success("Configuration executed successfully.")
-        except subprocess.CalledProcessError as e:
-            st.error("An error occurred while running the configuration.")
-            st.write("Error message:", e.stderr)
+            # Print the standard output
+            print("Output:")
+            print(result.stdout)
+            # Print the standard error (if any)
+            print("Errors:")
+            print(result.stderr)
+            # Check the return code
+            if result.returncode != 0:
+                print(f"Streamlit run failed with return code {result.returncode}")
+        else:
+            print("Streamlit run succeeded")
+                except subprocess.CalledProcessError as e:
+                    st.error("An error occurred while running the configuration.")
+                    st.write("Error message:", e.stderr)
