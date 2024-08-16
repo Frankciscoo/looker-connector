@@ -210,5 +210,49 @@ else:
         """,
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
+
+    import gspread
+    from google.oauth2 import service_account
+    from google.auth.transport.requests import Request
+    from google_auth_oauthlib.flow import InstalledAppFlow
+    from google.auth.transport.requests import Request
+    from google.auth.exceptions import RefreshError
+    import google.auth
+    
+    # Function to authenticate user with OAuth2
+    def authenticate_google_oauth():
+        scopes = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/spreadsheets"]
+        
+        flow = InstalledAppFlow.from_client_secrets_file(
+            'path_to_your_oauth_client_secret.json', scopes=scopes)
+        
+        creds = flow.run_local_server(port=0)
+        
+        st.success("Successfully authenticated!")
+        
+        # Use the credentials with gspread and PyDrive
+        gc = gspread.authorize(creds)
+        return creds, gc
+    
+    # Streamlit UI
+    st.title("Google Sheets and Drive Integration with OAuth2")
+    
+    creds, gc = authenticate_google_oauth()
+    
+    if creds and gc:
+        st.write("You are authenticated and can now interact with Google Sheets and Drive!")
+        
+        # Example usage with Google Sheets
+        sheet_name = st.text_input("Enter Google Sheets name:")
+        
+        if sheet_name:
+            try:
+                sheet = gc.open(sheet_name).sheet1
+                data = sheet.get_all_records()
+                st.write("Data from Google Sheets:", data)
+            except Exception as e:
+                st.error(f"Error accessing Google Sheets: {e}")
+
+
     
     
