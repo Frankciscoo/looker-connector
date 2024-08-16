@@ -212,21 +212,34 @@ else:
     st.header("Checks!", divider=True)
 
 
-    import gspread
-    from google.auth import default
-    from google.colab import drive
     import pandas as pd
     import numpy as np
     import requests
+    import gspread
+    from google.oauth2.service_account import Credentials
+
     
-    # Authentication function
-    def authenticate_user():
-        # Your authentication code here
-        auth.authenticate_user()
-        creds, _ = default()
-        gc = gspread.authorize(creds)
-        drive.mount('/content/drive')
-        return gc
+    # Define your Streamlit app
+    def main():
+        st.title('Google Sheets Integration')
+    
+        # Authenticate and create a client
+        creds = Credentials.from_service_account_file('path/to/your/service_account_key.json')
+        client = gspread.authorize(creds)
+    
+        # Open a Google Sheet
+        sheet = client.open('Your Spreadsheet Name').sheet1
+    
+        # Read data into a DataFrame
+        data = sheet.get_all_records()
+        df = pd.DataFrame(data)
+    
+        # Display the DataFrame in the Streamlit app
+        st.write(df)
+    
+    if __name__ == "__main__":
+        main()
+
     
     # Generate authentication token
     def generate_auth_token(client_id, client_secret, company_domain):
