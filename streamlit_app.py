@@ -211,10 +211,10 @@ else:
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
     
-    import requests
-    import pandas as pd
-    import numpy as np
+    import streamlit as st
+    import json
     import gspread
+    import pandas as pd
     from google.oauth2.service_account import Credentials
     from gspread_dataframe import get_as_dataframe
     
@@ -235,9 +235,9 @@ else:
         uploaded_file = st.file_uploader("Upload your Google Cloud service account JSON file", type="json")
         
         if uploaded_file:
-            # Read the uploaded file as a JSON object
-            credentials_json = uploaded_file.read()
-            credentials_json = json.loads(credentials_json)
+            # Read and decode the uploaded file
+            credentials_data = uploaded_file.read().decode('utf-8')
+            credentials_json = json.loads(credentials_data)
             
             # Authenticate and get the Google Sheets client
             gc = authenticate_with_google(credentials_json)
@@ -258,5 +258,8 @@ else:
     
     if __name__ == "__main__":
         main()
-
+        
+        if __name__ == "__main__":
+            main()
     
+        
