@@ -126,17 +126,10 @@ else:
         range_name = st.text_input("Enter the cell where the data should be pasted in the sheets (e.g., 'B2'):").strip()
 
     # Display the configuration summary
-        if st.button('Show Configuration Summary'):
-            st.markdown(
-                f"""
-                <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;">
-                    <p><strong>Company Domain:</strong> {company_domain}</p>
-                    <p><strong>Number of Looks:</strong> {number_of_looks}</p>
-                    <p><strong>Look IDs List:</strong> {looks_list}</p>
-                    <p><strong>Gsheet Title:</strong> {title}</p>
-                    <p><strong>Tab Names:</strong> {tab_names}</p>
-                    <p><strong>Cell Range for Pasting Data:</strong> {range_name}</p>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+    if st.button('Show Configuration Summary'):
+        st.write(f"**Company Domain:** {company_domain}")
+        st.write(f"**Number of Looks:** {number_of_looks}")
+        st.write(f"**Look IDs List:** {looks_list}")
+        st.write(f"**Gsheet Title:** {title}")
+        st.write(f"**Tab Names:** {tab_names}")
+        st.write(f"**Cell Range for Pasting Data:** {range_name}")
