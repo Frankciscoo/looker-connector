@@ -95,7 +95,7 @@ else:
     config_file = st.radio("Do you have a configuration file to upload?", ('Yes', 'No'))
 
     if config_file == 'Yes':
-        filename = = st.file_uploader("Upload a document (.txt)", type=("txt"))
+        filename = st.file_uploader("Upload a document (.txt)", type=("txt"))
         if filename and load_config_from_file(filename):
             st.success("Configuration loaded successfully.")
         else:
