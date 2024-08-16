@@ -95,7 +95,7 @@ else:
 
     def gather_filters_and_values():
         global all_filter
-        num_filters = st.number_input("Enter the number of filters to be applied to all Looks:", min_value=0, step=1)
+        num_filters = st.number_input("Enter the :blue[number of filters] to be applied to :blue[all Looks]:", min_value=0, step=1)
         st.error("These filters will be applied to all Looks unless they are marked as 'Exclude from filters", icon="⚠️")
         all_filter = {}  # Initialize the dictionary to avoid appending to old values
         for i in range(num_filters):
@@ -108,7 +108,7 @@ else:
     def gather_filters_and_values_group(group_num):
         global group_filter_0, group_filter_1, group_filter_2
         group_filters = [group_filter_0, group_filter_1, group_filter_2]
-        num_filters = st.number_input(f"Enter the :blue[number of filters] to be applied to Looks in group {group_num}:", min_value=0, step=1)
+        num_filters = st.number_input(f"Enter the :blue[number of filters] to be applied to Looks in :blue[group {group_num}]:", min_value=0, step=1)
         for i in range(num_filters):
             filter_key = f"sing_{i+1}"
             filter_input = st.text_input(f"Enter :blue[filter 'view_name.field_name' {i+1}] for :blue[group {group_num}]:").strip()
