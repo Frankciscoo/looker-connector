@@ -3,6 +3,6 @@ gspread
 requests
 pandas
 numpy
-google
+google.auth
 gspread_dataframe
 
