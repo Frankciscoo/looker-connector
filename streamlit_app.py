@@ -17,7 +17,7 @@ group_filter_2_assignment = []
 exclude_filters_assignment = []
 
 # Show title and description
-st.title("🔗 Looker-Gsheets Connector")
+st.title("🔗 Looker-gsheets Connector")
 st.write("XXX Write explanation")
 
 # Ask user for their Looker API client_id and client_secret via `st.text_input`
