@@ -191,6 +191,7 @@ else:
             <p><strong>Group 1 Assignments:</strong> {group_filter_1_assignment}</p>
             <p><strong>Group 2 Assignments:</strong> {group_filter_2_assignment}</p>
             <p><strong>Exclude Filters Assignments:</strong> {exclude_filters_assignment}</p>
+            st.json(additional_config)
         </div>
         """,
         unsafe_allow_html=True)
@@ -207,4 +208,4 @@ else:
     }
 
     # Display the additional configuration data as JSON
-    st.json(additional_config)
+    
