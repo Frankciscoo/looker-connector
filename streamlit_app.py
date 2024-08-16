@@ -144,7 +144,7 @@ else:
             else:
                 st.error("Failed to load configuration. Please provide the details manually.")
     else:
-        company_domain = st.caption("Enter the :blue[company domain] for your Looker instance i.e. 'https://domain.eu.looker.com':").strip()
+        company_domain = st.text_input("Enter the :blue[company domain] for your Looker instance i.e. 'https://domain.eu.looker.com':").strip()
         gather_number_of_looks()
         gather_look_ids()
         title = st.text_input("Enter the Title of the gsheet you want to send the Looks to:").strip()
