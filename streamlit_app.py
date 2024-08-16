@@ -1,5 +1,10 @@
 import streamlit as st
-
+import pandas as pd
+import numpy as np
+import gspread
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import Flow
+import json
 
 # Initial declarations
 number_of_looks = None
@@ -23,7 +28,6 @@ st.write("XXX Write explanation")
 st.header("API Credentials", divider=True)
 
 # Ask user for their Looker API client_id and client_secret via `st.text_input`
-
 client_id = st.text_input("**Looker API :blue[Client ID]**", type="password")
 client_secret = st.text_input("**Looker API :blue[Client Secret]**", type="password")
 
@@ -179,7 +183,7 @@ else:
         # Assign look IDs to groups
         assign_look_ids_to_groups()
 
-        # Initialize session state variable if it doesn't exist
+    # Initialize session state variable if it doesn't exist
     if 'show_summary' not in st.session_state:
         st.session_state.show_summary = False
     
@@ -209,30 +213,28 @@ else:
         </div>
         """,
         unsafe_allow_html=True)
+
     st.header("Checks!", divider=True)
 
-    import gspread
-    from google.oauth2.credentials import Credentials
-    from google_auth_oauthlib.flow import Flow
-    import json
-    import streamlit as st  # Make sure streamlit is imported
-    
     def update_google_sheet(credentials):
         # Authorize with gspread using the provided credentials
         gc = gspread.authorize(credentials)
         # Open the spreadsheet by title
-        spreadsheet = gc.open('hola')  # Replace with your spreadsheet title
-        # Select the first sheet
-        worksheet = spreadsheet.sheet1
-        
-        # Example: Update a cell
-        worksheet.update('A1', 'Updated Value')
-        
-        # Example: Append a new row
-        worksheet.append_row(['New', 'Row', 'Data'])
-        
-        return worksheet.get_all_records()
-    
+        spreadsheet = gc.open(title)
+
+        # Create DataFrame from Look IDs
+        looks_df = pd.DataFrame(np.array(looks_list).reshape(-1, 1), columns=['look_id'])
+
+        # Select sheets and update cells
+        for i in range(number_of_looks):
+            tab_name = globals().get(f"tab_name_{i}")  # Get the tab name dynamically
+            if tab_name:
+                sheet = spreadsheet.worksheet(tab_name)
+                # Example: Update cell A1 in the sheet with look IDs DataFrame
+                sheet.update('A1', looks_df.values.tolist())
+                
+        return spreadsheet.sheet1.get_all_records()
+
     def main():
         st.subheader("Google Sheets Editor")
     
