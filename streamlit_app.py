@@ -215,7 +215,6 @@ else:
     from google_auth_oauthlib.flow import Flow
     from google.auth.transport.requests import Request
     import json
-    import os
     
     def main():
         st.subheader("Google Authentication")
@@ -240,11 +239,18 @@ else:
                             "token_uri": "https://oauth2.googleapis.com/token"
                         }
                     },
-                    scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email"],
+                    scopes=[
+                        "https://www.googleapis.com/auth/userinfo.profile",
+                        "https://www.googleapis.com/auth/userinfo.email",
+                        "openid"
+                    ],
                 )
                 flow.redirect_uri = redirect_uri
     
-                authorization_url, state = flow.authorization_url(access_type='offline', include_granted_scopes='true')
+                authorization_url, state = flow.authorization_url(
+                    access_type='offline',
+                    include_granted_scopes='true'
+                )
                 st.write(f"Visit this [link]({authorization_url}) to authenticate")
     
                 code = st.text_input("Enter the code you received after authentication:")
