@@ -210,4 +210,49 @@ else:
         """,
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
+
+    import streamlit as st
+    import pandas as pd
+    import numpy as np
+    import gspread
+    from google.oauth2.service_account import Credentials
+    from gspread_dataframe import get_as_dataframe, set_with_dataframe
+    import json
     
+    # Streamlit app layout
+    st.title("Google Sheets Interaction")
+    
+    # Upload the service account JSON key file
+    uploaded_file = st.file_uploader("Upload Google Service Account JSON Key", type="json")
+    
+    if uploaded_file:
+        # Load the credentials from the uploaded file
+        creds = Credentials.from_service_account_info(json.load(uploaded_file))
+    
+        # Authorize gspread with the credentials
+        gc = gspread.authorize(creds)
+    
+        # Get the Google Sheets title and number of looks
+        title = st.text_input("Enter Google Sheets title:")
+        number_of_looks = st.number_input("Enter number of looks:", min_value=1, step=1)
+    
+        # Get the list of look IDs
+        looks_list = st.text_area("Enter Look IDs (comma-separated):")
+        if looks_list:
+            looks_list = list(map(int, looks_list.split(',')))
+            looks = pd.DataFrame(np.array(looks_list).reshape(-1, 1), columns=['look_id'])
+    
+            # Display the DataFrame
+            st.write("Looks DataFrame:", looks)
+    
+            # Open the Google Sheet
+            if title:
+                sheet = gc.open(title)
+                for i in range(number_of_looks):
+                    tab_name = st.text_input(f"Enter name of tab {i}:", key=f"tab_name_{i}")
+                    if tab_name:
+                        # Open the worksheet
+                        worksheet = sheet.worksheet(tab_name)
+                        # Display the worksheet content
+                        df = get_as_dataframe(worksheet)
+                        st.write(f"Data from tab '{tab_name}':", df)
