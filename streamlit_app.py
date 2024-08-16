@@ -132,8 +132,7 @@ else:
                 exclude_filters_assignment.append(index)
 
     # Handle user input and configuration
-    st.markdown("*Do you have a configuration file to upload?*")
-    config_file = st.radio("", ('Yes', 'No'))
+    config_file = st.radio("**Do you have a configuration file to upload?**", ('Yes', 'No'))
 
     if config_file == 'Yes':
         uploaded_file = st.file_uploader("Upload a document (.txt)", type=("txt"))
