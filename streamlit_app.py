@@ -236,7 +236,7 @@ else:
         if 'credentials' in st.session_state:
             del st.session_state['credentials']
     
-        uploaded_file = st.file_uploader("Upload your JSON credentials file", type="json")
+        uploaded_file = st.file_uploader("Upload your Google JSON credentials file", type="json")
     
         if uploaded_file is not None:
             try:
