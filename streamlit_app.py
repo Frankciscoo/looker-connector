@@ -211,46 +211,57 @@ else:
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
 
-    from google.oauth2 import id_token
-    from google.auth.transport import requests
+    from google.oauth2.credentials import Credentials
+    from google_auth_oauthlib.flow import Flow
+    from google.auth.transport.requests import Request
     import json
+    import os
     
     def main():
-        
-        # Google Authentication
         st.subheader("Google Authentication")
-        
+    
         # File uploader to upload JSON credentials
         uploaded_file = st.file_uploader("Upload your JSON credentials file", type="json")
-        
-        client_id = None
+    
         if uploaded_file is not None:
             try:
                 json_data = json.load(uploaded_file)
-                # Access the client_id in the 'web' object
-                client_id = json_data.get("web", {}).get("client_id")
-                if not client_id:
-                    st.error("client_id not found in the JSON file.")
+                client_id = json_data["web"]["client_id"]
+                client_secret = json_data["web"]["client_secret"]
+                redirect_uri = json_data["web"]["redirect_uris"][0]
+                
+                flow = Flow.from_client_config(
+                    {
+                        "web": {
+                            "client_id": client_id,
+                            "client_secret": client_secret,
+                            "redirect_uris": [redirect_uri],
+                            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                            "token_uri": "https://oauth2.googleapis.com/token"
+                        }
+                    },
+                    scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email"],
+                )
+                flow.redirect_uri = redirect_uri
+    
+                authorization_url, state = flow.authorization_url(access_type='offline', include_granted_scopes='true')
+                st.write(f"Visit this [link]({authorization_url}) to authenticate")
+    
+                code = st.text_input("Enter the code you received after authentication:")
+    
+                if code:
+                    flow.fetch_token(code=code)
+                    credentials = flow.credentials
+    
+                    st.success("Authentication successful")
+                    st.write("Access Token:", credentials.token)
+    
+                    # Continue with the rest of your app logic here
+    
             except json.JSONDecodeError as e:
                 st.error(f"Error decoding JSON file: {e}")
             except Exception as e:
                 st.error(f"An error occurred: {e}")
-        
-        if client_id:
-            token = st.text_input("Enter your Google ID token", type="password")
-            if st.button("Authenticate"):
-                try:
-                    idinfo = id_token.verify_oauth2_token(token, requests.Request(), client_id)
-                    if idinfo['aud'] != client_id:
-                        raise ValueError("Invalid client ID")
-                    st.success(f"Authentication successful: {idinfo['name']}")
-                    # Continue with the rest of your app logic here
-                except ValueError as e:
-                    st.error("Authentication failed")
-                    st.error(e)
-        
-        # Other app content
-        # ...
     
     if __name__ == "__main__":
         main()
