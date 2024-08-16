@@ -211,11 +211,12 @@ else:
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
 
-    from streamlit_gsheets import GSheetsConnection
-    import json
+    import gspread
+    from oauth2client.service_account import ServiceAccountCredentials
+    import pandas as pd
     
     # Define the Google Sheets URL
-    spreadsheet_url = "https://docs.google.com/spreadsheets/d/16HiwfLIsXhuH258wpsWn51e33F28K2CcF_VCRdjIRN4/edit?gid=0#gid=0"
+    spreadsheet_url = "https://docs.google.com/spreadsheets/d/16HiwfLIsXhuH258wpsWn51e33F28K2CcF_VCRdjIRN4/edit?gid=0"
     
     # Ask the user to upload the JSON key file
     uploaded_file = st.file_uploader("Upload your JSON key file", type="json")
@@ -224,11 +225,20 @@ else:
         # Load the JSON file content
         creds_dict = json.load(uploaded_file)
         
-        # Create the connection using the uploaded credentials and specify the spreadsheet URL
-        conn = st.connection("gsheets", type=GSheetsConnection, credentials=creds_dict, url=spreadsheet_url)
+        # Authenticate using the credentials
+        scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+        client = gspread.authorize(creds)
         
-        # Read data from the Google Sheet
-        df = conn.read()
+        # Open the Google Sheet
+        sheet = client.open_by_url(spreadsheet_url)
+        
+        # Select the first sheet
+        worksheet = sheet.get_worksheet(0)
+        
+        # Convert the worksheet to a pandas DataFrame
+        data = worksheet.get_all_records()
+        df = pd.DataFrame(data)
         
         # Display the data
         st.write(df)
