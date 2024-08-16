@@ -20,7 +20,7 @@ else:
     # Button to execute configuration.py
     if st.button('Run Configuration'):
         try:
-            result = subprocess.run(['python', 'configuration.py'], check=True, capture_output=True, text=True)
+            st.insert('pages/configuration.py')
             st.success("Configuration executed successfully.")
             st.write(result.stdout)
         except subprocess.CalledProcessError as e:
