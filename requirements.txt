@@ -5,4 +5,4 @@ pandas
 numpy
 google.auth
 gspread_dataframe
-googleapiclient.discovery
+
