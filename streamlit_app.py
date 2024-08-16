@@ -211,5 +211,52 @@ else:
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
     
+    import requests
+    import pandas as pd
+    import numpy as np
+    import gspread
+    from google.oauth2.service_account import Credentials
+    from gspread_dataframe import get_as_dataframe
     
+    # Authenticate using the uploaded service account JSON file
+    def authenticate_with_google(credentials_json):
+        creds = Credentials.from_service_account_info(
+            credentials_json,
+            scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+        )
+        gc = gspread.authorize(creds)
+        return gc
+    
+    # Main function
+    def main():
+        st.title("Google Sheets Data Access with Streamlit")
+        
+        # Upload the service account JSON file
+        uploaded_file = st.file_uploader("Upload your Google Cloud service account JSON file", type="json")
+        
+        if uploaded_file:
+            # Read the uploaded file as a JSON object
+            credentials_json = uploaded_file.read()
+            credentials_json = json.loads(credentials_json)
+            
+            # Authenticate and get the Google Sheets client
+            gc = authenticate_with_google(credentials_json)
+            
+            # Open a Google Sheet by name or URL
+            sh = gc.open("Your Google Sheet Name")
+    
+            # Select the first sheet
+            worksheet = sh.get_worksheet(0)
+    
+            # Get data as DataFrame
+            df = get_as_dataframe(worksheet)
+            
+            # Display the DataFrame
+            st.write(df)
+        else:
+            st.warning("Please upload your service account JSON file to proceed.")
+    
+    if __name__ == "__main__":
+        main()
+
     
