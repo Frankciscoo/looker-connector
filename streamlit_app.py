@@ -247,24 +247,23 @@ else:
                 client_id = json_data["web"]["client_id"]
                 client_secret = json_data["web"]["client_secret"]
                 redirect_uri = json_data["web"]["redirect_uris"][0]
-                
-                # Define the OAuth flow with limited scopes
-                flow = Flow.from_client_config(
-                    {
-                        "web": {
-                            "client_id": client_id,
-                            "client_secret": client_secret,
-                            "redirect_uris": [redirect_uri],
-                            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                            "token_uri": "https://oauth2.googleapis.com/token"
-                        }
-                    },
-                    scopes=[
-                        "https://www.googleapis.com/auth/spreadsheets",        # Full access to Google Sheets
-                        "https://www.googleapis.com/auth/drive.metadata.readonly" # Read-only access to file metadata in Google Drive
-                    ],
+    
+                # Write the client secrets to a temporary file
+                with open('client_secrets.json', 'w') as f:
+                    json.dump(json_data, f)
+    
+                # Define the OAuth flow with no initial scopes
+                flow = Flow.from_client_secrets_file(
+                    'client_secrets.json',
+                    scopes=None,  # Initial scopes set to None
+                    redirect_uri=redirect_uri
                 )
-                flow.redirect_uri = redirect_uri
+    
+                # Request specific scopes
+                flow.scope = [
+                    "https://www.googleapis.com/auth/spreadsheets",        # Full access to Google Sheets
+                    "https://www.googleapis.com/auth/drive.metadata.readonly" # Read-only access to file metadata in Google Drive
+                ]
     
                 # Generate the authorization URL
                 authorization_url, state = flow.authorization_url(
