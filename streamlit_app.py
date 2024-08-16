@@ -22,7 +22,8 @@ else:
         try:
             result = subprocess.run(['python', 'configuration.py'], capture_output=True, text=True)
             st.success("Configuration executed successfully.")
-            st.write(result.stdout)
+            st.write("Stdout:", result.stdout)
+            st.write("Stderr:", result.stderr)
         except subprocess.CalledProcessError as e:
             st.error("An error occurred while running the configuration.")
-            st.write(e.stderr)
+            st.write("Error message:", e.stderr)
