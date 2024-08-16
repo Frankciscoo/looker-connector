@@ -178,25 +178,33 @@ else:
         # Assign look IDs to groups
         assign_look_ids_to_groups()
 
-    # Display the configuration summary
-    if st.button('Show Configuration Summary'):
-        st.markdown(
-        f"""
-        <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;">
-            <p><strong>Company Domain:</strong> {company_domain}</p>
-            <p><strong>Number of Looks:</strong> {number_of_looks}</p>
-            <p><strong>Look IDs List:</strong> {looks_list}</p>
-            <p><strong>Gsheet Title:</strong> {title}</p>
-            <p><strong>Tab Names:</strong> {tab_names}</p>
-            <p><strong>Cell Range for Pasting Data:</strong> {range_name}</p>
-            <p><strong>Filters Applied to all Looks:</strong> {all_filter}</p>
-            <p><strong>Group 0 Filters:</strong> {group_filter_0}</p>
-            <p><strong>Group 1 Filters:</strong> {group_filter_1}</p>
-            <p><strong>Group 2 Filters:</strong> {group_filter_2}</p>
-            <p><strong>Group 0 Assignments:</strong> {group_filter_0_assignment}</p>
-            <p><strong>Group 1 Assignments:</strong> {group_filter_1_assignment}</p>
-            <p><strong>Group 2 Assignments:</strong> {group_filter_2_assignment}</p>
-            <p><strong>Exclude Filters Assignments:</strong> {exclude_filters_assignment}</p>
-        </div>
-        """,
-        unsafe_allow_html=True)
+    # Initialize session state variable if it doesn't exist
+if 'show_summary' not in st.session_state:
+    st.session_state.show_summary = False
+
+# Button to toggle the visibility of the configuration summary
+if st.button('Show Configuration Summary'):
+    st.session_state.show_summary = not st.session_state.show_summary
+
+# Display the configuration summary if the state is True
+if st.session_state.show_summary:
+    st.markdown(
+    f"""
+    <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;">
+        <p><strong>Company Domain:</strong> {company_domain}</p>
+        <p><strong>Number of Looks:</strong> {number_of_looks}</p>
+        <p><strong>Look IDs List:</strong> {looks_list}</p>
+        <p><strong>Gsheet Title:</strong> {title}</p>
+        <p><strong>Tab Names:</strong> {tab_names}</p>
+        <p><strong>Cell Range for Pasting Data:</strong> {range_name}</p>
+        <p><strong>Filters Applied to all Looks:</strong> {all_filter}</p>
+        <p><strong>Group 0 Filters:</strong> {group_filter_0}</p>
+        <p><strong>Group 1 Filters:</strong> {group_filter_1}</p>
+        <p><strong>Group 2 Filters:</strong> {group_filter_2}</p>
+        <p><strong>Group 0 Assignments:</strong> {group_filter_0_assignment}</p>
+        <p><strong>Group 1 Assignments:</strong> {group_filter_1_assignment}</p>
+        <p><strong>Group 2 Assignments:</strong> {group_filter_2_assignment}</p>
+        <p><strong>Exclude Filters Assignments:</strong> {exclude_filters_assignment}</p>
+    </div>
+    """,
+    unsafe_allow_html=True)
