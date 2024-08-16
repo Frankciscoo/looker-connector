@@ -216,6 +216,9 @@ else:
     from google_auth_oauthlib.flow import Flow
     import json
     
+    # Set the environment variable to relax token scope
+    os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
+    
     def update_google_sheet(credentials):
         # Authorize with gspread using the provided credentials
         gc = gspread.authorize(credentials)
@@ -252,15 +255,18 @@ else:
                 with open('client_secrets.json', 'w') as f:
                     json.dump(json_data, f)
     
-                # Define the OAuth flow with limited scopes
+                # Define the OAuth flow with no initial scopes
                 flow = Flow.from_client_secrets_file(
                     'client_secrets.json',
-                    scopes=[
-                        "https://www.googleapis.com/auth/spreadsheets",        # Full access to Google Sheets
-                        "https://www.googleapis.com/auth/drive.metadata.readonly" # Read-only access to file metadata in Google Drive
-                    ],
+                    scopes=None,  # Initial scopes set to None
                     redirect_uri=redirect_uri
                 )
+    
+                # Request specific scopes
+                flow.scope = [
+                    "https://www.googleapis.com/auth/spreadsheets",        # Full access to Google Sheets
+                    "https://www.googleapis.com/auth/drive.metadata.readonly" # Read-only access to file metadata in Google Drive
+                ]
     
                 # Generate the authorization URL
                 authorization_url, state = flow.authorization_url(
