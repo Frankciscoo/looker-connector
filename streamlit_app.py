@@ -214,6 +214,7 @@ else:
     import gspread
     from oauth2client.service_account import ServiceAccountCredentials
     import pandas as pd
+    import json
     
     # Define the Google Sheets URL
     spreadsheet_url = "https://docs.google.com/spreadsheets/d/16HiwfLIsXhuH258wpsWn51e33F28K2CcF_VCRdjIRN4/edit?gid=0"
@@ -222,8 +223,11 @@ else:
     uploaded_file = st.file_uploader("Upload your JSON key file", type="json")
     
     if uploaded_file is not None:
-        # Load the JSON file content
-        creds_dict = json.load(uploaded_file)
+        # Read the uploaded file as a string and then load it as JSON
+        file_contents = uploaded_file.read()
+        
+        # Load the JSON content
+        creds_dict = json.loads(file_contents)
         
         # Authenticate using the credentials
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
