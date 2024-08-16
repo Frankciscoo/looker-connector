@@ -144,12 +144,48 @@ else:
             else:
                 st.error("Failed to load configuration. Please provide the details manually.")
     else:
-        company_domain = st.text_input("Enter the company domain for your Looker instance i.e. 'https://domain.eu.looker.com':").strip()
-        gather_number_of_looks()
-        gather_look_ids()
-        title = st.text_input("Enter the Title of the gsheet you want to send the Looks to:").strip()
-        gather_tab_names()
-        range_name = st.text_input("Enter the cell where the data should be pasted in the sheets (e.g., 'B2'):").strip()
+        # Function to handle the display of the modal-like form
+        def show_modal():
+            st.subheader("Configure Looker Settings")
+            company_domain = st.text_input("Enter the company domain for your Looker instance (e.g., 'https://domain.eu.looker.com'):")
+            title = st.text_input("Enter the Title of the gsheet you want to send the Looks to:")
+            range_name = st.text_input("Enter the cell where the data should be pasted in the sheets (e.g., 'B2'):")
+            
+            if st.button("Submit"):
+                st.session_state.company_domain = company_domain
+                st.session_state.title = title
+                st.session_state.range_name = range_name
+                st.session_state.show_modal = False
+                st.success("Settings saved successfully!")
+                st.experimental_rerun()
+
+        # Main app logic
+        def main():
+            if 'show_modal' not in st.session_state:
+                st.session_state.show_modal = False
+        
+            if 'company_domain' not in st.session_state:
+                st.session_state.company_domain = ''
+            if 'title' not in st.session_state:
+                st.session_state.title = ''
+            if 'range_name' not in st.session_state:
+                st.session_state.range_name = ''
+            
+            st.title("Looker Integration")
+        
+            if st.session_state.show_modal:
+                show_modal()
+            else:
+                if st.button("Open Settings"):
+                    st.session_state.show_modal = True
+        
+                if st.session_state.company_domain and st.session_state.title and st.session_state.range_name:
+                    st.write(f"Company Domain: {st.session_state.company_domain}")
+                    st.write(f"Title: {st.session_state.title}")
+                    st.write(f"Range Name: {st.session_state.range_name}")
+        
+        if __name__ == "__main__":
+            main()
 
     # Handle filters input or upload
     filters_file = st.radio("**Do you have a filters file to upload?**", ('Yes', 'No'))
