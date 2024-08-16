@@ -95,7 +95,8 @@ else:
 
     def gather_filters_and_values():
         global all_filter
-        num_filters = st.number_input("Enter the number of filters to be applied to all Looks (This filter will be applied to all Looks unless they are marked as 'Exclude from filters):", min_value=0, step=1)
+        num_filters = st.number_input("Enter the number of filters to be applied to all Looks:", min_value=0, step=1)
+        st.info("This filter will be applied to all Looks unless they are marked as 'Exclude from filters", icon="⚠️")
         all_filter = {}  # Initialize the dictionary to avoid appending to old values
         for i in range(num_filters):
             filter_key = f"all_{i+1}"
