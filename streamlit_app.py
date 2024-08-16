@@ -231,9 +231,7 @@ else:
             if tab_name:
                 sheet = spreadsheet.worksheet(tab_name)
 
-    def main():
-        st.subheader("Google Sheets Editor")
-    
+    def main():    
         # Clear previous session state if needed
         if 'credentials' in st.session_state:
             del st.session_state['credentials']
