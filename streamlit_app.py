@@ -162,7 +162,6 @@ else:
             else:
                 st.error("Failed to load filters. Please provide the details manually.")
     else:
-        st.write("No filters file uploaded. You may manually input filters data:")
         gather_filters_and_values()
         st.write("Three groups of filters can be created (Group 0, Group 1, and Group 2). You will need to determine the number of filters to include in each group:")
         gather_filters_and_values_group(0)
