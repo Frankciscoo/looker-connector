@@ -211,14 +211,10 @@ else:
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
 
-    import os
     import gspread
     from google.oauth2.credentials import Credentials
     from google_auth_oauthlib.flow import Flow
     import json
-    
-    # Set the environment variable to relax token scope
-    os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
     
     def update_google_sheet(credentials):
         # Authorize with gspread using the provided credentials
