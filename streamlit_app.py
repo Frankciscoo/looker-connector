@@ -216,7 +216,7 @@ else:
     from google_auth_oauthlib.flow import Flow
     import json
     
-    def read_google_sheet(credentials):
+    def update_google_sheet(credentials):
         # Use gspread to authorize with the credentials
         gc = gspread.authorize(credentials)
         
@@ -226,13 +226,16 @@ else:
         # Select the first worksheet
         worksheet = spreadsheet.sheet1
         
-        # Get all values in the worksheet
-        records = worksheet.get_all_records()
+        # Example: Update a cell
+        worksheet.update('A1', 'Updated Value')  # Update cell A1 with "Updated Value"
     
-        return records
+        # Example: Append a new row
+        worksheet.append_row(['New', 'Row', 'Data'])  # Append a new row to the worksheet
+    
+        return worksheet.get_all_records()
     
     def main():
-        st.subheader("Google Authentication")
+        st.subheader("Google Sheets Editor")
     
         # File uploader to upload JSON credentials
         uploaded_file = st.file_uploader("Upload your JSON credentials file", type="json")
@@ -258,7 +261,8 @@ else:
                         "https://www.googleapis.com/auth/userinfo.profile",
                         "https://www.googleapis.com/auth/userinfo.email",
                         "openid",
-                        "https://www.googleapis.com/auth/spreadsheets.readonly"  # Add Google Sheets scope
+                        "https://www.googleapis.com/auth/spreadsheets",  # Full access to Google Sheets
+                        "https://www.googleapis.com/auth/drive.file"       # Access to Google Drive files you have opened or created with this app
                     ],
                 )
                 flow.redirect_uri = redirect_uri
@@ -278,14 +282,12 @@ else:
                     st.success("Authentication successful")
                     st.write("Access Token:", credentials.token)
     
-                    # Store the credentials in session state for future use
                     st.session_state.credentials = credentials
     
-                    # After authentication, read the spreadsheet
-                    records = read_google_sheet(credentials)
+                    # Now allow editing the spreadsheet
+                    records = update_google_sheet(credentials)
     
-                    # Display the records
-                    st.write("Spreadsheet Data:")
+                    st.write("Updated Spreadsheet Data:")
                     st.write(records)
     
             except json.JSONDecodeError as e:
