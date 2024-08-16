@@ -210,8 +210,7 @@ else:
         """,
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
-    import gspread
-    from oauth2client.service_account import ServiceAccountCredentials
+    from streamlit_gsheets import GSheetsConnection
     import json
     
     # Ask user to upload the JSON key file
@@ -221,9 +220,5 @@ else:
         # Load the JSON file content
         creds_dict = json.load(uploaded_file)
         
-        # Define the scope
-        scope = ['https://www.googleapis.com/auth/spreadsheets']
-    
-        # Authorize using the uploaded credentials
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-        client = gspread.authorize(creds)
+        conn = st.connection("gsheets", type=GSheetsConnection)
+        df = conn.read(worksheet="Example 1")
