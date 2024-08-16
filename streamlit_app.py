@@ -127,16 +127,16 @@ else:
 
     # Display the configuration summary
         if st.button('Show Configuration Summary'):
-        st.markdown(
-            f"""
-            <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;">
-                <p><strong>Company Domain:</strong> {company_domain}</p>
-                <p><strong>Number of Looks:</strong> {number_of_looks}</p>
-                <p><strong>Look IDs List:</strong> {looks_list}</p>
-                <p><strong>Gsheet Title:</strong> {title}</p>
-                <p><strong>Tab Names:</strong> {tab_names}</p>
-                <p><strong>Cell Range for Pasting Data:</strong> {range_name}</p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+            st.markdown(
+                f"""
+                <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;">
+                    <p><strong>Company Domain:</strong> {company_domain}</p>
+                    <p><strong>Number of Looks:</strong> {number_of_looks}</p>
+                    <p><strong>Look IDs List:</strong> {looks_list}</p>
+                    <p><strong>Gsheet Title:</strong> {title}</p>
+                    <p><strong>Tab Names:</strong> {tab_names}</p>
+                    <p><strong>Cell Range for Pasting Data:</strong> {range_name}</p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
