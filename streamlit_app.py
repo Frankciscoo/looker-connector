@@ -230,10 +230,7 @@ else:
             tab_name = globals().get(f"tab_name_{i}")  # Get the tab name dynamically
             if tab_name:
                 sheet = spreadsheet.worksheet(tab_name)
-                # Example: Update cell A1 in the sheet with look IDs DataFrame
-                sheet.update('A1', looks_df.values.tolist())
-                
-        return spreadsheet.sheet1.get_all_records()
+        print(looks)
 
     def main():
         st.subheader("Google Sheets Editor")
