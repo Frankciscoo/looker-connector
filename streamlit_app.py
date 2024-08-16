@@ -163,8 +163,10 @@ else:
             filters_content = filters_uploaded_file.read().decode('utf-8')
             if load_filters_from_file(filters_content):
                 st.success("Filters loaded successfully.")
+                st.divider()
             else:
                 st.error("Failed to load filters. Please provide the details manually.")
+                st.divider()
     else:
         gather_filters_and_values()
         st.info("Three groups of filters can be created (Group 0, Group 1, and Group 2). You will need to determine the number of filters to include in each group:", icon="ℹ️")
