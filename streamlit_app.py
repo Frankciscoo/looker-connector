@@ -1,4 +1,5 @@
 import streamlit as st
+import subprocess
 
 # Show title and description.
 st.title("🔗 Looker-Gsheets Connector")
@@ -15,7 +16,17 @@ if not client_id or not client_secret:
     st.info("Please add your Looker API Client ID and Client Secret to continue.", icon="🗝️")
 else:
     st.success("Credentials provided successfully.")
-    # Proceed with the rest of your code here...
+    
+    # Button to execute configuration.py
+    if st.button('Run Configuration'):
+        try:
+            result = subprocess.run(['python', 'configuration.py'], check=True, capture_output=True, text=True)
+            st.success("Configuration executed successfully.")
+            st.write(result.stdout)
+        except subprocess.CalledProcessError as e:
+            st.error("An error occurred while running the configuration.")
+            st.write(e.stderr)
+
 
 
     
