@@ -211,11 +211,11 @@ else:
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
 
-    import pandas as pd
-    import numpy as np
-    import gspread
-    from google.oauth2.service_account import Credentials
-    from gspread_dataframe import get_as_dataframe, set_with_dataframe
-    import json
+import pandas as pd
+import numpy as np
+import gspread
+from google.oauth2.service_account import Credentials
+from gspread_dataframe import get_as_dataframe, set_with_dataframe
+import json
     
     
