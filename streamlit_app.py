@@ -133,7 +133,7 @@ else:
                 exclude_filters_assignment.append(index)
 
     # Handle user input and configuration
-    config_file = st.radio("**Do you have a configuration file to upload?**", ('Yes', 'No'))
+    config_file = st.radio("**Do you have a :blue[configuration file] to upload?**", ('Yes', 'No'))
 
     if config_file == 'Yes':
         uploaded_file = st.file_uploader("Upload a document (.txt)", type=("txt"))
@@ -147,9 +147,9 @@ else:
         company_domain = st.text_input("Enter the :blue[company domain] for your Looker instance i.e. 'https://domain.eu.looker.com':").strip()
         gather_number_of_looks()
         gather_look_ids()
-        title = st.text_input("Enter the Title of the gsheet you want to send the Looks to:").strip()
+        title = st.text_input("Enter the :blue[Title of the gsheet] you want to send the Looks to:").strip()
         gather_tab_names()
-        range_name = st.text_input("Enter the cell where the data should be pasted in the sheets (e.g., 'B2'):").strip()
+        range_name = st.text_input("Enter the :blue[cell] where the data should be pasted in the sheets (e.g., 'B2'):").strip()
 
     # Handle filters input or upload
     filters_file = st.radio("**Do you have a filters file to upload?**", ('Yes', 'No'))
