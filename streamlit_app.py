@@ -213,13 +213,12 @@ else:
     from streamlit_gsheets import GSheetsConnection
     import json
     
+    spreadsheet = "https://docs.google.com/spreadsheets/d/16HiwfLIsXhuH258wpsWn51e33F28K2CcF_VCRdjIRN4/edit?gid=0#gid=0"
     # Ask user to upload the JSON key file
     uploaded_file = st.file_uploader("Upload your JSON key file", type="json")
     
     if uploaded_file is not None:
         # Load the JSON file content
         creds_dict = json.load(uploaded_file)
-
-        spreadsheet = "https://docs.google.com/spreadsheets/d/16HiwfLIsXhuH258wpsWn51e33F28K2CcF_VCRdjIRN4/edit?gid=0#gid=0"
         conn = st.connection("gsheets", type=GSheetsConnection)
         df = conn.read()
