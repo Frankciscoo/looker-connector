@@ -172,6 +172,16 @@ else:
         # Assign look IDs to groups
         assign_look_ids_to_groups()
 
+    additional_config = {
+        "Filters Applied to all Looks": all_filter,
+        "Group 0 Filters": group_filter_0,
+        "Group 1 Filters": group_filter_1,
+        "Group 2 Filters": group_filter_2,
+        "Group 0 Assignments": group_filter_0_assignment,
+        "Group 1 Assignments": group_filter_1_assignment,
+        "Group 2 Assignments": group_filter_2_assignment,
+        "Exclude Filters Assignments": exclude_filters_assignment
+    }
     # Display the configuration summary
     if st.button('Show Configuration Summary'):
         st.markdown(
@@ -196,16 +206,5 @@ else:
         """,
         unsafe_allow_html=True)
 
-    additional_config = {
-        "Filters Applied to all Looks": all_filter,
-        "Group 0 Filters": group_filter_0,
-        "Group 1 Filters": group_filter_1,
-        "Group 2 Filters": group_filter_2,
-        "Group 0 Assignments": group_filter_0_assignment,
-        "Group 1 Assignments": group_filter_1_assignment,
-        "Group 2 Assignments": group_filter_2_assignment,
-        "Exclude Filters Assignments": exclude_filters_assignment
-    }
-
-    # Display the additional configuration data as JSON
+    
     
