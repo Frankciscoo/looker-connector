@@ -215,6 +215,7 @@ else:
     from google.oauth2.credentials import Credentials
     from google_auth_oauthlib.flow import Flow
     import json
+    import streamlit as st  # Make sure streamlit is imported
     
     def update_google_sheet(credentials):
         # Authorize with gspread using the provided credentials
@@ -252,18 +253,15 @@ else:
                 with open('client_secrets.json', 'w') as f:
                     json.dump(json_data, f)
     
-                # Define the OAuth flow with no initial scopes
+                # Define the OAuth flow with the required scopes
                 flow = Flow.from_client_secrets_file(
                     'client_secrets.json',
-                    scopes=None,  # Initial scopes set to None
+                    scopes=[
+                        "https://www.googleapis.com/auth/spreadsheets",        # Full access to Google Sheets
+                        "https://www.googleapis.com/auth/drive.metadata.readonly" # Read-only access to file metadata in Google Drive
+                    ],
                     redirect_uri=redirect_uri
                 )
-    
-                # Request specific scopes
-                flow.scope = [
-                    "https://www.googleapis.com/auth/spreadsheets",        # Full access to Google Sheets
-                    "https://www.googleapis.com/auth/drive.metadata.readonly" # Read-only access to file metadata in Google Drive
-                ]
     
                 # Generate the authorization URL
                 authorization_url, state = flow.authorization_url(
