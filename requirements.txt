@@ -5,3 +5,4 @@ numpy
 gspread
 st-gsheets-connection
 oauth2client
+google-auth
