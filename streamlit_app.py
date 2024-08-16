@@ -221,4 +221,5 @@ else:
         creds_dict = json.load(uploaded_file)
         
         conn = st.connection("gsheets", type=GSheetsConnection)
-        df = conn.read(worksheet="Example 1")
+        sheet = gc.open(title)
+        df = conn.read(worksheet="Hoja 1")
