@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import tempfile
 
 # Initial declarations
 number_of_looks = None
@@ -31,23 +32,20 @@ else:
     st.success("Credentials provided successfully!")
 
     # Load configuration function
-    def load_config_from_file(filename):
+    def load_config_from_file(file_content):
         global number_of_looks, looks_list, title, tab_names, range_name, company_domain
-        if not os.path.isfile(filename):
-            st.error(f"Configuration file '{filename}' does not exist.")
-            return False
-        with open(filename, 'r') as file:
-            config = file.read().splitlines()
-            config_dict = {}
-            for line in config:
+        config = file_content.splitlines()
+        config_dict = {}
+        for line in config:
+            if '=' in line:
                 key, value = line.split('=', 1)
                 config_dict[key.strip()] = value.strip()
-            company_domain = config_dict.get('company_domain', '')
-            number_of_looks = int(config_dict.get('number_of_looks', '0'))
-            looks_list = config_dict.get('looks_list', '').split(',')
-            title = config_dict.get('title', '')
-            tab_names = config_dict.get('tab_names', '').split(',')
-            range_name = config_dict.get('range_name', '')
+        company_domain = config_dict.get('company_domain', '')
+        number_of_looks = int(config_dict.get('number_of_looks', '0'))
+        looks_list = config_dict.get('looks_list', '').split(',')
+        title = config_dict.get('title', '')
+        tab_names = config_dict.get('tab_names', '').split(',')
+        range_name = config_dict.get('range_name', '')
         return True
 
     # Functions for gathering user input
@@ -59,7 +57,7 @@ else:
         global looks_list
         looks_list = []  # Reset looks_list to avoid appending to old values
         for i in range(number_of_looks):
-            look_id = st.text_input(f"Enter IDs for look_{i}:").strip()
+            look_id = st.text_input(f"Enter ID for look_{i}:").strip()
             if look_id:
                 looks_list.append(look_id)
 
@@ -74,6 +72,7 @@ else:
     def gather_filters_and_values():
         global all_filter
         num_filters = st.number_input("Enter the number of filters to be applied to all Looks:", min_value=0, step=1)
+        all_filter = {}  # Initialize the dictionary to avoid appending to old values
         for i in range(num_filters):
             filter_key = f"all_{i+1}"
             filter_input = st.text_input(f"Enter filter 'view_name.field_name' {i+1}:").strip()
@@ -111,11 +110,13 @@ else:
     config_file = st.radio("Do you have a configuration file to upload?", ('Yes', 'No'))
 
     if config_file == 'Yes':
-        filename = st.file_uploader("Upload a document (.txt)", type=("txt"))
-        if filename and load_config_from_file(filename):
-            st.success("Configuration loaded successfully.")
-        else:
-            st.error("Failed to load configuration. Please provide the details manually.")
+        uploaded_file = st.file_uploader("Upload a document (.txt)", type=("txt"))
+        if uploaded_file:
+            content = uploaded_file.read().decode('utf-8')
+            if load_config_from_file(content):
+                st.success("Configuration loaded successfully.")
+            else:
+                st.error("Failed to load configuration. Please provide the details manually.")
     else:
         company_domain = st.text_input("Enter the company domain for your Looker instance i.e. 'https://domain.eu.looker.com':").strip()
         gather_number_of_looks()
