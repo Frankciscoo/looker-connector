@@ -209,4 +209,4 @@ if st.session_state.show_summary:
     </div>
     """,
     unsafe_allow_html=True)
-    st.header("Checks!", divider=True)
+st.header("Checks!", divider=True)
