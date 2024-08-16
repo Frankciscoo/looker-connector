@@ -134,6 +134,7 @@ else:
                 exclude_filters_assignment.append(index)
 
     # Handle user input and configuration
+    st.divider()
     config_file = st.radio("**Do you have a :blue[configuration file] to upload?**", ('Yes', 'No'))
 
     if config_file == 'Yes':
@@ -153,6 +154,7 @@ else:
         range_name = st.text_input("Enter the :blue[cell] where the data should be pasted in the sheets (e.g., 'B2'):").strip()
 
     # Handle filters input or upload
+    st.divider()
     filters_file = st.radio("**Do you have a :blue[filters file] to upload?**", ('Yes', 'No'))
 
     if filters_file == 'Yes':
