@@ -210,8 +210,5 @@ else:
         """,
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
-
-    from google.oauth2 import service_account
-    from gsheetsdb import connect
     
     
