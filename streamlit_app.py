@@ -81,7 +81,7 @@ else:
         global looks_list
         looks_list = []  # Reset looks_list to avoid appending to old values
         for i in range(number_of_looks):
-            look_id = st.text_input(f"Enter ID for look_{i}:").strip()
+            look_id = st.text_input(f"Enter ID for :blue[look_{i}]:").strip()
             if look_id:
                 looks_list.append(look_id)
 
@@ -89,7 +89,7 @@ else:
         global tab_names
         tab_names = []
         for i in range(number_of_looks):
-            tab_name = st.text_input(f"Enter name for gsheet tab_{i}:").strip()
+            tab_name = st.text_input(f"Enter name for :blue[gsheet tab_{i}]:").strip()
             if tab_name:
                 tab_names.append(tab_name)
 
