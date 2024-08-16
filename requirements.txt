@@ -4,3 +4,4 @@ requests
 pandas
 numpy
 gspread_dataframe
+st-gsheets-connection
