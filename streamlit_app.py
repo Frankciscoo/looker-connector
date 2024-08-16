@@ -217,8 +217,11 @@ else:
     import json
     
     def update_google_sheet(credentials):
+        # Authorize with gspread using the provided credentials
         gc = gspread.authorize(credentials)
+        # Open the spreadsheet by title
         spreadsheet = gc.open('Your Spreadsheet Title')  # Replace with your spreadsheet title
+        # Select the first sheet
         worksheet = spreadsheet.sheet1
         
         # Example: Update a cell
@@ -245,6 +248,7 @@ else:
                 client_secret = json_data["web"]["client_secret"]
                 redirect_uri = json_data["web"]["redirect_uris"][0]
                 
+                # Define the OAuth flow with limited scopes
                 flow = Flow.from_client_config(
                     {
                         "web": {
@@ -256,32 +260,34 @@ else:
                         }
                     },
                     scopes=[
-                        "https://www.googleapis.com/auth/userinfo.profile",
-                        "https://www.googleapis.com/auth/userinfo.email",
-                        "openid",
-                        "https://www.googleapis.com/auth/spreadsheets",
-                        "https://www.googleapis.com/auth/drive.file"
+                        "https://www.googleapis.com/auth/spreadsheets",        # Full access to Google Sheets
+                        "https://www.googleapis.com/auth/drive.metadata.readonly" # Read-only access to file metadata in Google Drive
                     ],
                 )
                 flow.redirect_uri = redirect_uri
     
+                # Generate the authorization URL
                 authorization_url, state = flow.authorization_url(
                     access_type='offline',
                     include_granted_scopes='true'
                 )
                 st.write(f"Visit this [link]({authorization_url}) to authenticate")
     
+                # Input field for the code received after authentication
                 code = st.text_input("Enter the code you received after authentication:")
     
                 if code:
+                    # Exchange the authorization code for a token
                     flow.fetch_token(code=code)
                     credentials = flow.credentials
     
                     st.success("Authentication successful")
                     st.write("Access Token:", credentials.token)
     
+                    # Store credentials in the session state
                     st.session_state.credentials = credentials
     
+                    # Allow the user to interact with Google Sheets
                     records = update_google_sheet(credentials)
     
                     st.write("Updated Spreadsheet Data:")
