@@ -210,8 +210,6 @@ else:
         """,
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
-    
-    import streamlit as st
     import gspread
     from oauth2client.service_account import ServiceAccountCredentials
     import json
@@ -224,7 +222,7 @@ else:
         creds_dict = json.load(uploaded_file)
         
         # Define the scope
-        scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+        scope = ['https://www.googleapis.com/auth/spreadsheets']
     
         # Authorize using the uploaded credentials
         creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
