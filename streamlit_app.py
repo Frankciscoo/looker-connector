@@ -211,11 +211,16 @@ else:
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
 
-import pandas as pd
-import numpy as np
-import gspread
-from google.oauth2.service_account import Credentials
-from gspread_dataframe import get_as_dataframe, set_with_dataframe
-import json
+    from google.oauth2 import service_account
+    from gsheetsdb import connect
+    
+    # Create a connection object.
+    credentials = service_account.Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+        ],
+    )
+    conn = connect(credentials=credentials)
     
     
