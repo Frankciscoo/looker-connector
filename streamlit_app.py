@@ -179,7 +179,7 @@ else:
         assign_look_ids_to_groups()
 
     # Display the configuration summary
-    if st.button('Show Configuration Summary',on_click=onSearch):
+    if st.button('Show Configuration Summary'):
         st.markdown(
         f"""
         <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px;">
