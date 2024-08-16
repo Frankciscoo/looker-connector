@@ -3,7 +3,5 @@ gspread
 requests
 pandas
 numpy
-google.colab
-google.auth
 gspread_dataframe
 
