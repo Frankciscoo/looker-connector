@@ -230,7 +230,6 @@ else:
             tab_name = globals().get(f"tab_name_{i}")  # Get the tab name dynamically
             if tab_name:
                 sheet = spreadsheet.worksheet(tab_name)
-            print(tab_name)
 
     def main():
         st.subheader("Google Sheets Editor")
