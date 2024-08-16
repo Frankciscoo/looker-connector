@@ -21,8 +21,8 @@ st.title("🔗 Looker-Gsheets Connector")
 st.write("XXX Write explanation")
 
 # Ask user for their Looker API client_id and client_secret via `st.text_input`
-client_id = st.text_input("**Looker API Client ID**", type="password")
-client_secret = st.text_input("**Looker API Client Secret**", type="password")
+client_id = st.text_input("**Looker API :blue[Client ID]**", type="password")
+client_secret = st.text_input("**Looker API :blue[Client Secret]**", type="password")
 
 if not client_id or not client_secret:
     st.info("Please add your Looker API Client ID and Client Secret to continue.", icon="🗝️")
@@ -75,7 +75,7 @@ else:
     # Functions for gathering user input
     def gather_number_of_looks():
         global number_of_looks
-        number_of_looks = st.number_input("Enter the number of Looks to be sent:", min_value=1, step=1)
+        number_of_looks = st.number_input("Enter the :blue[number of Looks] to be sent:", min_value=1, step=1)
 
     def gather_look_ids():
         global looks_list
