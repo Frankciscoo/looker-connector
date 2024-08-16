@@ -228,7 +228,8 @@ else:
         if uploaded_file is not None:
             try:
                 json_data = json.load(uploaded_file)
-                client_id = json_data.get("client_id")
+                # Access the client_id in the 'web' object
+                client_id = json_data.get("web", {}).get("client_id")
                 if not client_id:
                     st.error("client_id not found in the JSON file.")
             except json.JSONDecodeError as e:
