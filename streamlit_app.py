@@ -211,6 +211,7 @@ else:
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
 
+    import os
     import gspread
     from google.oauth2.credentials import Credentials
     from google_auth_oauthlib.flow import Flow
