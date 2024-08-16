@@ -108,11 +108,11 @@ else:
     def gather_filters_and_values_group(group_num):
         global group_filter_0, group_filter_1, group_filter_2
         group_filters = [group_filter_0, group_filter_1, group_filter_2]
-        num_filters = st.number_input(f"Enter the number of filters to be applied to Looks in group {group_num}:", min_value=0, step=1)
+        num_filters = st.number_input(f"Enter the :blue[number of filters] to be applied to Looks in group {group_num}:", min_value=0, step=1)
         for i in range(num_filters):
             filter_key = f"sing_{i+1}"
-            filter_input = st.text_input(f"Enter filter 'view_name.field_name' {i+1} for group {group_num}:").strip()
-            value_input = st.text_input(f"Enter value for filter {i+1} for group {group_num}:").strip()
+            filter_input = st.text_input(f"Enter :blue[filter 'view_name.field_name' {i+1}] for :blue[group {group_num}]:").strip()
+            value_input = st.text_input(f"Enter :blue[value for filter {i+1}] for :blue[group {group_num}]:").strip()
             if filter_input and value_input:
                 group_filters[group_num][filter_key] = {'filter': [filter_input], 'value': [value_input]}
 
@@ -152,7 +152,7 @@ else:
         range_name = st.text_input("Enter the :blue[cell] where the data should be pasted in the sheets (e.g., 'B2'):").strip()
 
     # Handle filters input or upload
-    filters_file = st.radio("**Do you have a filters file to upload?**", ('Yes', 'No'))
+    filters_file = st.radio("**Do you have a :blue[filters file] to upload?**", ('Yes', 'No'))
 
     if filters_file == 'Yes':
         filters_uploaded_file = st.file_uploader("Upload filters document (.txt)", type=("txt"))
