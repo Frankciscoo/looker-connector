@@ -1,6 +1,22 @@
 import streamlit as st
 import os
 
+# Initial declarations
+number_of_looks = None
+looks_list = []
+look_dict = {}
+all_filter = {}
+group_filter_0 = {}
+group_filter_1 = {}
+group_filter_2 = {}
+exclude_filters = {
+    'all_1': {'filter': [''],'value': ['']}
+}
+group_filter_0_assignment = []
+group_filter_1_assignment = []
+group_filter_2_assignment = []
+exclude_filters_assignment = []
+
 # Show title and description
 st.title("🔗 Looker-Gsheets Connector")
 st.write("XXX Write explanation")
