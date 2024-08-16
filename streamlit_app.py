@@ -1,7 +1,7 @@
 import streamlit as st
 
 # Show title and description.
-st.title("💬 Looker Test")
+st.title("🔗 Looker Connector")
 st.write(
     "XXX"
     "Write explanation"
