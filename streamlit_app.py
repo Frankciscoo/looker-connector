@@ -210,39 +210,3 @@ else:
         """,
         unsafe_allow_html=True)
     st.header("Checks!", divider=True)
-
-    import gspread
-    from oauth2client.service_account import ServiceAccountCredentials
-    import pandas as pd
-    import json
-    
-    # Define the Google Sheets URL
-    spreadsheet_url = "https://docs.google.com/spreadsheets/d/16HiwfLIsXhuH258wpsWn51e33F28K2CcF_VCRdjIRN4/edit?gid=0"
-    
-    # Ask the user to upload the JSON key file
-    uploaded_file = st.file_uploader("Upload your JSON key file", type="json")
-    
-    if uploaded_file is not None:
-        # Read the uploaded file as a string and then load it as JSON
-        file_contents = uploaded_file.read()
-        
-        # Load the JSON content
-        creds_dict = json.loads(file_contents)
-        
-        # Authenticate using the credentials
-        scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-        client = gspread.authorize(creds)
-        
-        # Open the Google Sheet
-        sheet = client.open_by_url(spreadsheet_url)
-        
-        # Select the first sheet
-        worksheet = sheet.get_worksheet(0)
-        
-        # Convert the worksheet to a pandas DataFrame
-        data = worksheet.get_all_records()
-        df = pd.DataFrame(data)
-        
-        # Display the data
-        st.write(df)
