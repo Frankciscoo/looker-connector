@@ -23,9 +23,9 @@ else:
             # Call the Streamlit script using `streamlit run`
             result = subprocess.run(['streamlit', 'run', 'configuration.py'], capture_output=True, text=True)
             # Display results
-            st.success("Configuration executed successfully.")
             st.write("Stdout:", result.stdout)
             st.write("Stderr:", result.stderr)
+            st.success("Configuration executed successfully.")
         except subprocess.CalledProcessError as e:
             st.error("An error occurred while running the configuration.")
             st.write("Error message:", e.stderr)
