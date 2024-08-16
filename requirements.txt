@@ -1,2 +1,10 @@
 streamlit
 gspread
+requests
+pandas
+numpy
+json
+google.colab
+google.auth
+gspread_dataframe
+googleapiclient.discovery
