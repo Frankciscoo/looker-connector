@@ -216,7 +216,6 @@ else:
     import json
     
     def main():
-        st.title("Your Streamlit App")
         
         # Google Authentication
         st.subheader("Google Authentication")
