@@ -256,7 +256,7 @@ else:
             # Access credentials from Streamlit secrets
             client_id = st.secrets["google"]["client_id"]
             client_secret = st.secrets["google"]["client_secret"]
-            redirect_uri = st.secrets["google"]["redirect_uris"][0]
+            redirect_uri = st.secrets["google"]["redirect_uris"]
     
             # Define the client configuration dictionary
             client_config = {
