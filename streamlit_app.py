@@ -263,7 +263,6 @@ else:
                     "client_id": client_id,
                     "client_secret": client_secret,
                     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                    "redirect_uris": '["http://localhost:8501/"]',
                     "token_uri": "https://oauth2.googleapis.com/token",
                     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
                     "project_id": st.secrets["google"]["project_id"]
@@ -282,7 +281,8 @@ else:
             # Generate the authorization URL
             authorization_url, state = flow.authorization_url(
                 access_type='offline',
-                include_granted_scopes='true'
+                include_granted_scopes='true',
+                redirect_uri='http://localhost:8501/'
             )
             st.write(f"Visit this [link]({authorization_url}) to authenticate")
     
