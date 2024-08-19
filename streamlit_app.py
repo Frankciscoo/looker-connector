@@ -360,3 +360,23 @@ def update_google_sheet(credentials):
     
 # Create a DataFrame from looks_list
 looks = pd.DataFrame(np.array(looks_list).reshape(-1, 1), columns=['look_id'])
+
+# Check the Looker filters
+if st.button('Check Filters'):
+    # Get the models & views from each look
+    explores = {}
+    for i in range(number_of_looks):
+        tab_name = globals().get(f"name_tab_{i}")
+        if tab_name:
+            globals()[f"tab_{i}"] = sheet.worksheet(tab_name)
+        explores[i] = get_model_view(looks.loc[i, "look_id"])
+
+    # Get all the fields from each explore (model - view)
+    explore_fields = {}
+    for key, (lookml_model_name, explore_name) in explores.items():
+        dimensions, measures, parameters = get_fields_from_explore(lookml_model_name, explore_name)
+        explore_fields[key] = {'dimensions': dimensions, 'measures': measures, 'parameters': parameters}
+
+    # Check filters and display result
+    result = check_filters_in_explores(explore_fields, all_filter, group_filters, group_filter_assignments, exclude_filters_assignment)
+    st.text(result)
