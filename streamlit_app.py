@@ -286,3 +286,9 @@ HEADERS = {
         'Authorization': 'token {}'.format(generate_auth_token())
     }
 URL = f'{company_domain}:19999/api/4.0/'
+def get_model_view(look_id):
+    read_look = requests.get(f"{URL}looks/{look_id}", headers=HEADERS)
+    json_data = read_look.json()
+    model = json_data.get('query', {}).get('model')
+    view = json_data.get('query', {}).get('view')
+    return model, view
