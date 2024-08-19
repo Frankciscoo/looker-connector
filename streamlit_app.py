@@ -254,26 +254,31 @@ else:
     
         try:
             # Access credentials from Streamlit secrets
-            json_data = {
+            client_id = st.secrets["google"]["client_id"]
+            client_secret = st.secrets["google"]["client_secret"]
+            redirect_uri = st.secrets["google"]["redirect_uris"][0]
+    
+            # Define the client configuration dictionary
+            client_config = {
                 "web": {
-                    "client_id": st.secrets["google"]["client_id"],
-                    "client_secret": st.secrets["google"]["client_secret"],
-                    "redirect_uris": st.secrets["google"]["redirect_uris"]
+                    "client_id": client_id,
+                    "client_secret": client_secret,
+                    "redirect_uris": [redirect_uri],
+                    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                    "token_uri": "https://oauth2.googleapis.com/token",
+                    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                    "project_id": st.secrets["google"]["project_id"],
+                    "javascript_origins": st.secrets["google"]["javascript_origins"]
                 }
             }
     
-            client_id = json_data["web"]["client_id"]
-            client_secret = json_data["web"]["client_secret"]
-            redirect_uri = json_data["web"]["redirect_uris"][0]
-    
             # Define the OAuth flow with the required scopes
             flow = Flow.from_client_config(
-                json_data,
+                client_config,
                 scopes=[
                     "https://www.googleapis.com/auth/spreadsheets",        # Full access to Google Sheets
                     "https://www.googleapis.com/auth/drive.metadata.readonly" # Read-only access to file metadata in Google Drive
-                ],
-                redirect_uri=redirect_uri
+                ]
             )
     
             # Generate the authorization URL
@@ -303,8 +308,6 @@ else:
                 st.write("Updated Spreadsheet Data:")
                 st.write(records)
     
-        except json.JSONDecodeError as e:
-            st.error(f"Error decoding JSON data: {e}")
         except Exception as e:
             st.error(f"An error occurred: {e}")
     
