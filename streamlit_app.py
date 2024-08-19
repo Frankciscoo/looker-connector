@@ -363,3 +363,4 @@ else:
     
     # Create a DataFrame from looks_list
     looks = pd.DataFrame(np.array(looks_list).reshape(-1, 1), columns=['look_id'])
+    st.write(looks)
