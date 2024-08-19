@@ -283,4 +283,8 @@ else:
         }
         auth_token = requests.post(f'{company_domain}:19999/api/4.0/login', data=data)
         return auth_token.json().get('access_token')
+    HEADERS = {
+    'Authorization': 'token {}'.format(generate_auth_token())
+    }
+    URL = f'{company_domain}:19999/api/4.0/'
     
