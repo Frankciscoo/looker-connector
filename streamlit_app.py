@@ -158,6 +158,71 @@ else:
         title = st.text_input("Enter the :blue[Title of the gsheet] you want to send the Looks to:").strip()
         gather_tab_names()
         range_name = st.text_input("Enter the :blue[cell] where the data should be pasted in the sheets (e.g., 'B2'):").strip()
+    
+    def main():
+        # Clear previous session state if needed
+        if 'credentials' in st.session_state:
+            del st.session_state['credentials']
+    
+        try:
+            # Access credentials from Streamlit secrets
+            client_id = st.secrets["google"]["client_id"]
+            client_secret = st.secrets["google"]["client_secret"]
+    
+            # Define the client configuration dictionary WITHOUT redirect_uri
+            client_config = {
+                "web": {
+                    "client_id": client_id,
+                    "client_secret": client_secret,
+                    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                    "token_uri": "https://oauth2.googleapis.com/token",
+                    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                    "project_id": st.secrets["google"]["project_id"]
+                }
+            }
+    
+            # Define the OAuth flow with the required scopes
+            flow = Flow.from_client_config(
+                client_config,
+                scopes=[
+                    "https://www.googleapis.com/auth/spreadsheets",        # Full access to Google Sheets
+                    "https://www.googleapis.com/auth/drive.metadata.readonly" # Read-only access to file metadata in Google Drive
+                ],
+                redirect_uri= "http://localhost:8501/"
+            )
+    
+            # Generate the authorization URL, explicitly setting the redirect_uri only here
+            authorization_url, state = flow.authorization_url(
+                access_type='offline',
+                include_granted_scopes='true'
+            )
+            st.write(f"Visit this [link]({authorization_url}) to authenticate")
+    
+            # Input field for the code received after authentication
+            code = st.text_input("Enter the code you received after authentication:")
+    
+            if code:
+                # Exchange the authorization code for a token
+                flow.fetch_token(code=code)
+                credentials = flow.credentials
+    
+                st.success("Authentication successful")
+                st.write("Access Token:", credentials.token)
+    
+                # Store credentials in the session state
+                st.session_state.credentials = credentials
+    
+                # Allow the user to interact with Google Sheets
+                records = update_google_sheet(credentials)
+    
+                st.write("Updated Spreadsheet Data:")
+                st.write(records)
+    
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+    
+    if __name__ == "__main__":
+        main()
 
     # Handle filters input or upload
     st.header("Filters", divider=True)
@@ -246,68 +311,3 @@ else:
             tab_name = globals().get(f"tab_name_{i}")  # Get the tab name dynamically
             if tab_name:
                 sheet = spreadsheet.worksheet(tab_name)
-
-    def main():
-        # Clear previous session state if needed
-        if 'credentials' in st.session_state:
-            del st.session_state['credentials']
-    
-        try:
-            # Access credentials from Streamlit secrets
-            client_id = st.secrets["google"]["client_id"]
-            client_secret = st.secrets["google"]["client_secret"]
-    
-            # Define the client configuration dictionary WITHOUT redirect_uri
-            client_config = {
-                "web": {
-                    "client_id": client_id,
-                    "client_secret": client_secret,
-                    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                    "token_uri": "https://oauth2.googleapis.com/token",
-                    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-                    "project_id": st.secrets["google"]["project_id"]
-                }
-            }
-    
-            # Define the OAuth flow with the required scopes
-            flow = Flow.from_client_config(
-                client_config,
-                scopes=[
-                    "https://www.googleapis.com/auth/spreadsheets",        # Full access to Google Sheets
-                    "https://www.googleapis.com/auth/drive.metadata.readonly" # Read-only access to file metadata in Google Drive
-                ],
-                redirect_uri= "http://localhost:8501/"
-            )
-    
-            # Generate the authorization URL, explicitly setting the redirect_uri only here
-            authorization_url, state = flow.authorization_url(
-                access_type='offline',
-                include_granted_scopes='true'
-            )
-            st.write(f"Visit this [link]({authorization_url}) to authenticate")
-    
-            # Input field for the code received after authentication
-            code = st.text_input("Enter the code you received after authentication:")
-    
-            if code:
-                # Exchange the authorization code for a token
-                flow.fetch_token(code=code)
-                credentials = flow.credentials
-    
-                st.success("Authentication successful")
-                st.write("Access Token:", credentials.token)
-    
-                # Store credentials in the session state
-                st.session_state.credentials = credentials
-    
-                # Allow the user to interact with Google Sheets
-                records = update_google_sheet(credentials)
-    
-                st.write("Updated Spreadsheet Data:")
-                st.write(records)
-    
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
-    
-    if __name__ == "__main__":
-        main()
