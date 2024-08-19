@@ -212,12 +212,6 @@ else:
                 # Store credentials in the session state
                 st.session_state.credentials = credentials
     
-                # Allow the user to interact with Google Sheets
-                records = update_google_sheet(credentials)
-    
-                st.write("Updated Spreadsheet Data:")
-                st.write(records)
-    
         except Exception as e:
             st.error(f"An error occurred: {e}")
     
@@ -311,3 +305,9 @@ else:
             tab_name = globals().get(f"tab_name_{i}")  # Get the tab name dynamically
             if tab_name:
                 sheet = spreadsheet.worksheet(tab_name)
+
+    # Allow the user to interact with Google Sheets
+                records = update_google_sheet(credentials)
+    
+                st.write("Updated Spreadsheet Data:")
+                st.write(records)
