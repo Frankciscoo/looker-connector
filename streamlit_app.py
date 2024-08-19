@@ -286,9 +286,74 @@ HEADERS = {
         'Authorization': 'token {}'.format(generate_auth_token())
     }
 URL = f'{company_domain}:19999/api/4.0/'
+
 def get_model_view(look_id):
     read_look = requests.get(f"{URL}looks/{look_id}", headers=HEADERS)
     json_data = read_look.json()
     model = json_data.get('query', {}).get('model')
     view = json_data.get('query', {}).get('view')
     return model, view
+    
+def get_fields_from_explore(lookml_model_name, explore_name):
+    read_look = requests.get(f"{URL}lookml_models/{lookml_model_name}/explores/{explore_name}", headers=HEADERS)
+    json_data = read_look.json()
+    dimensions = [item.get('name') for item in json_data.get('fields', {}).get('dimensions', [])]
+    measures = [item.get('name') for item in json_data.get('fields', {}).get('measures', [])]
+    parameters = [item.get('name') for item in json_data.get('fields', {}).get('parameters', [])]
+    return dimensions, measures, parameters
+
+def check_filters_in_explores(explore_fields, all_filter, group_filters, group_filter_assignments, exclude_filters_assignment):
+    missing_filters = {}
+
+    def check_filter_against_explores(filter_name, explore_key, explore_value):
+        if filter_name == '':
+            return
+
+        dimensions = explore_value['dimensions']
+        measures = explore_value['measures']
+        parameters = explore_value['parameters']
+
+        if (filter_name not in dimensions and
+                filter_name not in measures and
+                filter_name not in parameters):
+
+            if explore_key not in missing_filters:
+                missing_filters[explore_key] = []
+            missing_filters[explore_key].append(filter_name)
+
+    assignments = {}
+    for i, assignment in enumerate(group_filter_assignments):
+        for assignment_value in assignment:
+            if assignment_value is not None:
+                if f'group_filter_{i}' not in assignments:
+                    assignments[f'group_filter_{i}'] = []
+                assignments[f'group_filter_{i}'].append(assignment_value)
+
+    for filter_key, filter_value in all_filter.items():
+        filter_name = filter_value['filter'][0]
+
+        for explore_key, explore_value in explore_fields.items():
+            check_filter_against_explores(filter_name, explore_key, explore_value)
+
+    for group_key, group_filter in group_filters.items():
+        explore_keys = assignments.get(group_key)
+        if explore_keys is not None:
+            for explore_key in explore_keys:
+                explore_value = explore_fields.get(explore_key)
+                if explore_value:
+                    for filter_key, filter_value in group_filter.items():
+                        filter_name = filter_value['filter'][0]
+                        check_filter_against_explores(filter_name, explore_key, explore_value)
+
+    if not missing_filters:
+        return "Filters can be applied to all Looks!"
+    else:
+        missing_messages = []
+        for explore_key, filters in missing_filters.items():
+            missing_messages.append(f"Warning: Missing/Incorrect filter(s) {filters} in explore from look #: {explore_key}")
+        return "\n".join(missing_messages)
+
+def update_google_sheet(credentials):
+    gc = gspread.authorize(credentials)
+    spreadsheet = gc.open(title)
+    return spreadsheet
