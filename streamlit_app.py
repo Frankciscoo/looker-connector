@@ -247,7 +247,7 @@ else:
             if tab_name:
                 sheet = spreadsheet.worksheet(tab_name)
 
-    def main():    
+    def main():
         # Clear previous session state if needed
         if 'credentials' in st.session_state:
             del st.session_state['credentials']
@@ -269,7 +269,7 @@ else:
                 }
             }
     
-            # Define the OAuth flow with the required scopes
+            # Define the OAuth flow with the required scopes, without setting redirect_uri here
             flow = Flow.from_client_config(
                 client_config,
                 scopes=[
@@ -278,11 +278,11 @@ else:
                 ]
             )
     
-            # Generate the authorization URL
+            # Generate the authorization URL, explicitly setting the redirect_uri only here
             authorization_url, state = flow.authorization_url(
                 access_type='offline',
                 include_granted_scopes='true',
-                redirect_uri='http://localhost:8501/'
+                redirect_uri='http://localhost:8501/'  # Explicitly set redirect_uri here
             )
             st.write(f"Visit this [link]({authorization_url}) to authenticate")
     
