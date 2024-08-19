@@ -374,19 +374,6 @@ else:
         spreadsheet = gc.open(title)
         return spreadsheet
     
-    # Streamlit inputs
-    with st.form("settings_form"):
-        client_id = st.text_input("Looker Client ID")
-        client_secret = st.text_input("Looker Client Secret", type="password")
-        company_domain = st.text_input("Looker Company Domain (e.g., yourcompany.com)")
-        title = st.text_input("Google Sheets Title")
-        number_of_looks = st.number_input("Number of Looks", min_value=1, step=1)
-        
-        # Google Sheets credentials upload
-        creds_file = st.file_uploader("Upload Google Sheets credentials (JSON)", type="json")
-        
-        submit_button = st.form_submit_button("Submit")
-    
     if submit_button:
         if not (client_id and client_secret and company_domain and title and creds_file):
             st.error("Please fill in all required fields and upload the credentials file.")
