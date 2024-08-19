@@ -196,7 +196,7 @@ else:
                 access_type='offline',
                 include_granted_scopes='true'
             )
-            st.write(f"Visit this [link]({authorization_url}) to grant access to your gsheet")
+            st.write(f"Visit this [link]({authorization_url}) to grant access to your gsheet:")
     
             # Input field for the code received after authentication
             code = st.text_input("Enter the code generated in the URL :blue['code=']")
