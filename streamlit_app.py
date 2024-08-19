@@ -361,10 +361,10 @@ else:
                             check_filter_against_explores(filter_name, explore_key, explore_value)
 
         if not missing_filters:
-        st.markdown(
-            "<p style='color:green;'>Filters can be applied to all Looks!</p>",
-            unsafe_allow_html=True
-        )
+            st.markdown(
+                "<p style='color:green;'>Filters can be applied to all Looks!</p>",
+                unsafe_allow_html=True
+            )
         else:
             missing_messages = []
             for explore_key, filters in missing_filters.items():
