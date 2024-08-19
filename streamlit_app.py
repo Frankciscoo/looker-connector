@@ -273,44 +273,29 @@ else:
         unsafe_allow_html=True)
 
     st.header("Checks!", divider=True)
-
-    def update_google_sheet(credentials):
-        # Authorize with gspread using the provided credentials
-        gc = gspread.authorize(credentials)
-        # Open the spreadsheet by title
-        spreadsheet = gc.open(title)
-
-        # Create DataFrame from Look IDs
-        looks_df = pd.DataFrame(np.array(looks_list).reshape(-1, 1), columns=['look_id'])
-
-        # Select sheets and update cells
-        for i in range(number_of_looks):
-            tab_name = globals().get(f"tab_name_{i}")  # Get the tab name dynamically
-            if tab_name:
-                sheet = spreadsheet.worksheet(tab_name)
-
-
-    st.title('Looker Filters Validation Tool')
     
-    # Function to authenticate to Looker
-    def generate_auth_token(client_id, client_secret, company_domain):
+    # Define functions as in your code
+    def generate_auth_token():
         data = {
-            'client_id': client_id,
-            'client_secret': client_secret
+            'client_id': userdata.get('client_id'),
+            'client_secret': userdata.get('client_secret')
         }
         auth_token = requests.post(f'{company_domain}:19999/api/4.0/login', data=data)
         return auth_token.json().get('access_token')
     
-    # Function to get model and view
-    def get_model_view(look_id, URL, HEADERS):
+    HEADERS = {
+        'Authorization': 'token {}'.format(generate_auth_token())
+    }
+    URL = f'{company_domain}:19999/api/4.0/'
+    
+    def get_model_view(look_id):
         read_look = requests.get(f"{URL}looks/{look_id}", headers=HEADERS)
         json_data = read_look.json()
         model = json_data.get('query', {}).get('model')
         view = json_data.get('query', {}).get('view')
         return model, view
     
-    # Function to get fields from explore
-    def get_fields_from_explore(lookml_model_name, explore_name, URL, HEADERS):
+    def get_fields_from_explore(lookml_model_name, explore_name):
         read_look = requests.get(f"{URL}lookml_models/{lookml_model_name}/explores/{explore_name}", headers=HEADERS)
         json_data = read_look.json()
         dimensions = [item.get('name') for item in json_data.get('fields', {}).get('dimensions', [])]
@@ -318,19 +303,21 @@ else:
         parameters = [item.get('name') for item in json_data.get('fields', {}).get('parameters', [])]
         return dimensions, measures, parameters
     
-    # Function to check filters in explores
     def check_filters_in_explores(explore_fields, all_filter, group_filters, group_filter_assignments, exclude_filters_assignment):
         missing_filters = {}
     
         def check_filter_against_explores(filter_name, explore_key, explore_value):
             if filter_name == '':
                 return
+    
             dimensions = explore_value['dimensions']
             measures = explore_value['measures']
             parameters = explore_value['parameters']
+    
             if (filter_name not in dimensions and
                     filter_name not in measures and
                     filter_name not in parameters):
+    
                 if explore_key not in missing_filters:
                     missing_filters[explore_key] = []
                 missing_filters[explore_key].append(filter_name)
@@ -345,6 +332,7 @@ else:
     
         for filter_key, filter_value in all_filter.items():
             filter_name = filter_value['filter'][0]
+    
             for explore_key, explore_value in explore_fields.items():
                 check_filter_against_explores(filter_name, explore_key, explore_value)
     
@@ -366,48 +354,46 @@ else:
                 missing_messages.append(f"Warning: Missing/Incorrect filter(s) {filters} in explore from look #: {explore_key}")
             return "\n".join(missing_messages)
     
-    # Function to update Google Sheets
-    def update_google_sheet(credentials, title):
-        # Authorize with gspread using the provided credentials
+    def update_google_sheet(credentials):
         gc = gspread.authorize(credentials)
-        # Open the spreadsheet by title
         spreadsheet = gc.open(title)
         return spreadsheet
     
-    if submit_button:
-        if not (client_id and client_secret and company_domain and title and creds_file):
-            st.error("Please fill in all required fields and upload the credentials file.")
-        else:
-            # Authenticate Google Sheets
-            creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_file.read(), ['https://www.googleapis.com/auth/spreadsheets'])
-            try:
-                spreadsheet = update_google_sheet(creds, title)
-                st.success(f"Successfully opened Google Sheet: {title}")
-            except Exception as e:
-                st.error(f"Failed to open Google Sheet: {e}")
-            
-            # Create DataFrame of Look IDs
-            looks = pd.DataFrame(np.array(looks_list).reshape(-1, 1), columns=['look_id'])
-            
-            # Authenticate to Looker
-            HEADERS = {'Authorization': f'token {generate_auth_token(client_id, client_secret, company_domain)}'}
-            URL = f'{company_domain}:19999/api/4.0/'
-            
-            # Get model and view for each look
-            explores = {}
-            for i in range(number_of_looks):
-                tab_name = f'name_tab_{i}'  # Replace with actual tab name retrieval logic
-                if tab_name:
-                    tab = spreadsheet.worksheet(tab_name)
-                    looks_id = looks.loc[i, 'look_id']
-                    explores[i] = get_model_view(looks_id, URL, HEADERS)
-            
-            # Get fields from each explore
-            explore_fields = {}
-            for key, (lookml_model_name, explore_name) in explores.items():
-                dimensions, measures, parameters = get_fields_from_explore(lookml_model_name, explore_name, URL, HEADERS)
-                explore_fields[key] = {'dimensions': dimensions, 'measures': measures, 'parameters': parameters}
+    # Streamlit UI
+    st.title('Looker API and Google Sheets Integration')
     
-            # Check filters
-            result = check_filters_in_explores(explore_fields, all_filter, group_filters, group_filter_assignments, exclude_filters_assignment)
-            st.text(result)
+    # Input for the number of looks
+    number_of_looks = st.number_input('Number of Looks:', min_value=1, max_value=100, value=number_of_looks)
+    
+    # Create a DataFrame from looks_list
+    looks = pd.DataFrame(np.array(looks_list).reshape(-1, 1), columns=['look_id'])
+    
+    # Check the Looker filters
+    if st.button('Check Filters'):
+        # Get the models & views from each look
+        explores = {}
+        for i in range(number_of_looks):
+            tab_name = globals().get(f"name_tab_{i}")
+            if tab_name:
+                globals()[f"tab_{i}"] = sheet.worksheet(tab_name)
+            explores[i] = get_model_view(looks.loc[i, "look_id"])
+    
+        # Get all the fields from each explore (model - view)
+        explore_fields = {}
+        for key, (lookml_model_name, explore_name) in explores.items():
+            dimensions, measures, parameters = get_fields_from_explore(lookml_model_name, explore_name)
+            explore_fields[key] = {'dimensions': dimensions, 'measures': measures, 'parameters': parameters}
+    
+        # Check filters and display result
+        result = check_filters_in_explores(explore_fields, all_filter, group_filters, group_filter_assignments, exclude_filters_assignment)
+        st.text(result)
+    
+    # Use provided credentials for Google Sheets
+    if credentials:
+        try:
+            spreadsheet = update_google_sheet(credentials)
+            st.success(f'Successfully accessed the spreadsheet: {spreadsheet.title}')
+        except Exception as e:
+            st.error(f'Error accessing the spreadsheet: {str(e)}')
+    else:
+        st.warning('Google Sheets credentials are not provided.')
