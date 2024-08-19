@@ -311,19 +311,19 @@ else:
         def check_filter_against_explores(filter_name, explore_key, explore_value):
             if filter_name == '':
                 return
-
+    
             dimensions = explore_value['dimensions']
             measures = explore_value['measures']
             parameters = explore_value['parameters']
-
+    
             if (filter_name not in dimensions and
                     filter_name not in measures and
                     filter_name not in parameters):
-
+    
                 if explore_key not in missing_filters:
                     missing_filters[explore_key] = []
                 missing_filters[explore_key].append(filter_name)
-
+    
         assignments = {}
         for i, assignment in enumerate(group_filter_assignments):
             for assignment_value in assignment:
@@ -331,13 +331,14 @@ else:
                     if f'group_filter_{i}' not in assignments:
                         assignments[f'group_filter_{i}'] = []
                     assignments[f'group_filter_{i}'].append(assignment_value)
-
+    
+        # Check filters applied to all Looks
         for filter_key, filter_value in all_filter.items():
             filter_name = filter_value['filter'][0]
-
             for explore_key, explore_value in explore_fields.items():
                 check_filter_against_explores(filter_name, explore_key, explore_value)
-
+    
+        # Check group-specific filters
         for group_key, group_filter in group_filters.items():
             explore_keys = assignments.get(group_key)
             if explore_keys is not None:
@@ -347,7 +348,7 @@ else:
                         for filter_key, filter_value in group_filter.items():
                             filter_name = filter_value['filter'][0]
                             check_filter_against_explores(filter_name, explore_key, explore_value)
-
+    
         if not missing_filters:
             return "Filters can be applied to all Looks!"
         else:
@@ -355,17 +356,19 @@ else:
             for explore_key, filters in missing_filters.items():
                 missing_messages.append(f"Warning: Missing/Incorrect filter(s) {filters} in explore from look #: {explore_key}")
             return "\n".join(missing_messages)
-
-    def update_google_sheet(credentials):
-        gc = gspread.authorize(credentials)
-        spreadsheet = gc.open(title)
-        return spreadsheet
     
-    # Create a DataFrame from looks_list
-    looks = pd.DataFrame(np.array(looks_list).reshape(-1, 1), columns=['look_id'])
-    # Check the Looker filters
+    # Define group_filters globally or in main() function
+    group_filters = {
+        'group_filter_0': group_filter_0,
+        'group_filter_1': group_filter_1,
+        'group_filter_2': group_filter_2
+    }
+    
+    # Your other functions and code
+    
+    # Update button action to use the combined filters
     if st.button('Check Filters'):
-        # Get the models & views from each look
+        # Initialize explores dictionary
         explores = {}
         for i in range(number_of_looks):
             tab_name = globals().get(f"name_tab_{i}")
@@ -373,7 +376,7 @@ else:
                 globals()[f"tab_{i}"] = sheet.worksheet(tab_name)
             explores[i] = get_model_view(looks.loc[i, "look_id"])
     
-        # Get all the fields from each explore (model - view)
+        # Get all fields from explores
         explore_fields = {}
         for key, (lookml_model_name, explore_name) in explores.items():
             dimensions, measures, parameters = get_fields_from_explore(lookml_model_name, explore_name)
