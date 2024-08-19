@@ -196,10 +196,10 @@ else:
                 access_type='offline',
                 include_granted_scopes='true'
             )
-            st.write(f"Visit this [link]({authorization_url}) to authenticate")
+            st.write(f"Visit this [link]({authorization_url}) to grant access to your gsheet")
     
             # Input field for the code received after authentication
-            code = st.text_input("Enter the code you received after authentication:")
+            code = st.text_input("Enter the code generated in the URL 'http://localhost:8501/?state=uTk5Jp5Qrl4xLGUrMqQbhGgoRWAg4W&:blue[code=4/0AQlEd8xkFHRczSkBp68VjoH2vsWS8T1vFF05Icfbmum10d4SDiwhHVqZH8ZCFXEMqFdCqw]&scope=https://www.googleapis.com/auth/drive.metadata.readonly%20https://www.googleapis.com/auth/spreadsheets'")
     
             if code:
                 # Exchange the authorization code for a token
@@ -207,7 +207,6 @@ else:
                 credentials = flow.credentials
     
                 st.success("Authentication successful")
-                st.write("Access Token:", credentials.token)
     
                 # Store credentials in the session state
                 st.session_state.credentials = credentials
