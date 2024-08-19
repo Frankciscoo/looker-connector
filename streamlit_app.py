@@ -24,6 +24,12 @@ group_filter_2_assignment = []
 exclude_filters_assignment = []
 company_domain = ""  # Initialize to avoid NameError
 
+group_filter_assignments = [
+    group_filter_0_assignment,
+    group_filter_1_assignment,
+    group_filter_2_assignment
+]
+
 group_filters = {
     'group_filter_0': group_filter_0,
     'group_filter_1': group_filter_1,
