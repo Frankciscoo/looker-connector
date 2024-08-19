@@ -287,4 +287,114 @@ else:
     'Authorization': 'token {}'.format(generate_auth_token())
     }
     URL = f'{company_domain}:19999/api/4.0/'
+
+    def get_model_view(look_id):
+        read_look = requests.get(f"{URL}looks/{look_id}", headers=HEADERS)
+        json_data = read_look.json()
+        model = json_data.get('query', {}).get('model')
+        view = json_data.get('query', {}).get('view')
+        return model, view
+    
+    def get_fields_from_explore(lookml_model_name, explore_name):
+        read_look = requests.get(f"{URL}lookml_models/{lookml_model_name}/explores/{explore_name}", headers=HEADERS)
+        json_data = read_look.json()
+        dimensions = [item.get('name') for item in json_data.get('fields', {}).get('dimensions', [])]
+        measures = [item.get('name') for item in json_data.get('fields', {}).get('measures', [])]
+        parameters = [item.get('name') for item in json_data.get('fields', {}).get('parameters', [])]
+        return dimensions, measures, parameters
+    
+    def check_filters_in_explores(explore_fields, all_filter, group_filters, group_filter_assignments, exclude_filters_assignment):
+        missing_filters = {}
+    
+        def check_filter_against_explores(filter_name, explore_key, explore_value):
+            if filter_name == '':
+                return
+    
+            dimensions = explore_value['dimensions']
+            measures = explore_value['measures']
+            parameters = explore_value['parameters']
+    
+            if (filter_name not in dimensions and
+                    filter_name not in measures and
+                    filter_name not in parameters):
+    
+                if explore_key not in missing_filters:
+                    missing_filters[explore_key] = []
+                missing_filters[explore_key].append(filter_name)
+    
+        assignments = {}
+        for i, assignment in enumerate(group_filter_assignments):
+            for assignment_value in assignment:
+                if assignment_value is not None:
+                    if f'group_filter_{i}' not in assignments:
+                        assignments[f'group_filter_{i}'] = []
+                    assignments[f'group_filter_{i}'].append(assignment_value)
+    
+        for filter_key, filter_value in all_filter.items():
+            filter_name = filter_value['filter'][0]
+    
+            for explore_key, explore_value in explore_fields.items():
+                check_filter_against_explores(filter_name, explore_key, explore_value)
+    
+        for group_key, group_filter in group_filters.items():
+            explore_keys = assignments.get(group_key)
+            if explore_keys is not None:
+                for explore_key in explore_keys:
+                    explore_value = explore_fields.get(explore_key)
+                    if explore_value:
+                        for filter_key, filter_value in group_filter.items():
+                            filter_name = filter_value['filter'][0]
+                            check_filter_against_explores(filter_name, explore_key, explore_value)
+    
+        if not missing_filters:
+            return "Filters can be applied to all Looks!"
+        else:
+            missing_messages = []
+            for explore_key, filters in missing_filters.items():
+                missing_messages.append(f"Warning: Missing/Incorrect filter(s) {filters} in explore from look #: {explore_key}")
+            return "\n".join(missing_messages)
+    
+    def update_google_sheet(credentials):
+        gc = gspread.authorize(credentials)
+        spreadsheet = gc.open(title)
+        return spreadsheet
+    
+    # Streamlit UI
+    st.title('Looker API and Google Sheets Integration')
+    
+    # Input for the number of looks
+    number_of_looks = st.number_input('Number of Looks:', min_value=1, max_value=100, value=number_of_looks)
+    
+    # Create a DataFrame from looks_list
+    looks = pd.DataFrame(np.array(looks_list).reshape(-1, 1), columns=['look_id'])
+    
+    # Check the Looker filters
+    if st.button('Check Filters'):
+        # Get the models & views from each look
+        explores = {}
+        for i in range(number_of_looks):
+            tab_name = globals().get(f"name_tab_{i}")
+            if tab_name:
+                globals()[f"tab_{i}"] = sheet.worksheet(tab_name)
+            explores[i] = get_model_view(looks.loc[i, "look_id"])
+    
+        # Get all the fields from each explore (model - view)
+        explore_fields = {}
+        for key, (lookml_model_name, explore_name) in explores.items():
+            dimensions, measures, parameters = get_fields_from_explore(lookml_model_name, explore_name)
+            explore_fields[key] = {'dimensions': dimensions, 'measures': measures, 'parameters': parameters}
+    
+        # Check filters and display result
+        result = check_filters_in_explores(explore_fields, all_filter, group_filters, group_filter_assignments, exclude_filters_assignment)
+        st.text(result)
+    
+    # Use provided credentials for Google Sheets
+    if credentials:
+        try:
+            spreadsheet = update_google_sheet(credentials)
+            st.success(f'Successfully accessed the spreadsheet: {spreadsheet.title}')
+        except Exception as e:
+            st.error(f'Error accessing the spreadsheet: {str(e)}')
+    else:
+        st.warning('Google Sheets credentials are not provided.')
     
