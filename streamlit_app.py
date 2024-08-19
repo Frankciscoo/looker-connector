@@ -265,8 +265,7 @@ else:
                     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
                     "token_uri": "https://oauth2.googleapis.com/token",
                     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-                    "project_id": st.secrets["google"]["project_id"],
-                    "redirect_uris": "http://localhost:8501/"
+                    "project_id": st.secrets["google"]["project_id"]
                 }
             }
     
@@ -276,7 +275,8 @@ else:
                 scopes=[
                     "https://www.googleapis.com/auth/spreadsheets",        # Full access to Google Sheets
                     "https://www.googleapis.com/auth/drive.metadata.readonly" # Read-only access to file metadata in Google Drive
-                ]
+                ],
+                redirect_uri= "http://localhost:8501/"
             )
     
             # Generate the authorization URL, explicitly setting the redirect_uri only here
