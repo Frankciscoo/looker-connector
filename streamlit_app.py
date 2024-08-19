@@ -4,8 +4,7 @@ import numpy as np
 import gspread
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
-import json
-import  requests
+import requests
 
 # Initial declarations
 number_of_looks = None
@@ -16,7 +15,7 @@ group_filter_0 = {}
 group_filter_1 = {}
 group_filter_2 = {}
 exclude_filters = {
-    'all_1': {'filter': [''],'value': ['']}
+    'all_1': {'filter': [''], 'value': ['']}
 }
 group_filter_0_assignment = []
 group_filter_1_assignment = []
@@ -104,7 +103,7 @@ else:
     def gather_filters_and_values():
         global all_filter
         num_filters = st.number_input("Enter the :blue[number of filters] to be applied to :blue[all Looks]:", min_value=0, step=1)
-        st.error("These filters will be applied to all Looks unless they are marked as 'Exclude from filters", icon="⚠️")
+        st.error("These filters will be applied to all Looks unless they are marked as 'Exclude from filters'", icon="⚠️")
         all_filter = {}  # Initialize the dictionary to avoid appending to old values
         for i in range(num_filters):
             filter_key = f"all_{i+1}"
@@ -159,7 +158,8 @@ else:
         title = st.text_input("Enter the :blue[Title of the gsheet] you want to send the Looks to:").strip()
         gather_tab_names()
         range_name = st.text_input("Enter the :blue[cell] where the data should be pasted in the sheets (e.g., 'B2'):").strip()
-    
+
+    # Main function to handle OAuth flow
     def main():
         # Clear previous session state if needed
         if 'credentials' in st.session_state:
@@ -189,7 +189,7 @@ else:
                     "https://www.googleapis.com/auth/spreadsheets",        # Full access to Google Sheets
                     "https://www.googleapis.com/auth/drive.metadata.readonly" # Read-only access to file metadata in Google Drive
                 ],
-                redirect_uri= "http://localhost:8501/"
+                redirect_uri="http://localhost:8501/"
             )
     
             # Generate the authorization URL, explicitly setting the redirect_uri only here
@@ -228,10 +228,10 @@ else:
             filters_content = filters_uploaded_file.read().decode('utf-8')
             if load_filters_from_file(filters_content):
                 st.success("Filters loaded successfully.")
-                st.divider()
+                st.write('---')  # Use '---' to add a visual divider
             else:
                 st.error("Failed to load filters. Please provide the details manually.")
-                st.divider()
+                st.write('---')  # Use '---' to add a visual divider
     else:
         gather_filters_and_values()
         st.info("Three groups of filters can be created (Group 0, Group 1, and Group 2). You will need to determine the number of filters to include in each group:", icon="ℹ️")
@@ -274,17 +274,18 @@ else:
         unsafe_allow_html=True)
 
     st.header("Checks!", divider=True)
+
 def generate_auth_token():
-        data = {
-            'client_id': client_id,
-            'client_secret': client_secret
-        }
-        auth_token = requests.post(f'{company_domain}:19999/api/4.0/login', data=data)
-        return auth_token.json().get('access_token')
-    
-HEADERS = {
-        'Authorization': 'token {}'.format(generate_auth_token())
+    data = {
+        'client_id': client_id,
+        'client_secret': client_secret
     }
+    auth_token = requests.post(f'{company_domain}:19999/api/4.0/login', data=data)
+    return auth_token.json().get('access_token')
+
+HEADERS = {
+    'Authorization': f'token {generate_auth_token()}'
+}
 URL = f'{company_domain}:19999/api/4.0/'
 
 def get_model_view(look_id):
@@ -293,7 +294,7 @@ def get_model_view(look_id):
     model = json_data.get('query', {}).get('model')
     view = json_data.get('query', {}).get('view')
     return model, view
-    
+
 def get_fields_from_explore(lookml_model_name, explore_name):
     read_look = requests.get(f"{URL}lookml_models/{lookml_model_name}/explores/{explore_name}", headers=HEADERS)
     json_data = read_look.json()
@@ -357,8 +358,6 @@ def update_google_sheet(credentials):
     gc = gspread.authorize(credentials)
     spreadsheet = gc.open(title)
     return spreadsheet
-    
-# Create a DataFrame from looks_list
-looks = pd.DataFrame(np.array(looks_list).reshape(-1, 1), columns=['look_id'])
 
-print(looks)
+# Create a DataFrame from looks_list
+looks = pd.DataFrame(np.array([x for x in looks_list if x is not None]).reshape(-1, 1), columns=['look_id'])
