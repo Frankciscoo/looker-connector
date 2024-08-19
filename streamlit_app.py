@@ -361,12 +361,17 @@ else:
                             check_filter_against_explores(filter_name, explore_key, explore_value)
 
         if not missing_filters:
-            return "Filters can be applied to all Looks!"
+        st.markdown(
+            "<p style='color:green;'>Filters can be applied to all Looks!</p>",
+            unsafe_allow_html=True
+        )
         else:
             missing_messages = []
             for explore_key, filters in missing_filters.items():
-                missing_messages.append(f"Warning: Missing/Incorrect filter(s) {filters} in explore from look #: {explore_key}")
-            return "\n".join(missing_messages)
+                missing_messages.append(
+                    f"<p style='color:red;'>Warning: Missing/Incorrect filter(s) {filters} in explore from look #: {explore_key}</p>"
+                )
+            st.markdown("\n".join(missing_messages), unsafe_allow_html=True)
 
     def update_google_sheet(credentials):
         gc = gspread.authorize(credentials)
