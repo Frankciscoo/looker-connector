@@ -282,8 +282,7 @@ else:
             # Generate the authorization URL, explicitly setting the redirect_uri only here
             authorization_url, state = flow.authorization_url(
                 access_type='offline',
-                include_granted_scopes='true',
-                redirect_uri='http://localhost:8501/'  # Set redirect_uri explicitly here
+                include_granted_scopes='true'
             )
             st.write(f"Visit this [link]({authorization_url}) to authenticate")
     
