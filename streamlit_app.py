@@ -24,6 +24,12 @@ group_filter_2_assignment = []
 exclude_filters_assignment = []
 company_domain = ""  # Initialize to avoid NameError
 
+group_filters = {
+    'group_filter_0': group_filter_0,
+    'group_filter_1': group_filter_1,
+    'group_filter_2': group_filter_2
+}
+
 # Show title and description
 st.title("🔗 Looker-gsheets connector")
 st.write("XXX Write explanation")
