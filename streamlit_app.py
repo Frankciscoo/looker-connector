@@ -257,7 +257,7 @@ else:
             client_id = st.secrets["google"]["client_id"]
             client_secret = st.secrets["google"]["client_secret"]
     
-            # Define the client configuration dictionary
+            # Define the client configuration dictionary WITHOUT redirect_uri
             client_config = {
                 "web": {
                     "client_id": client_id,
@@ -266,10 +266,11 @@ else:
                     "token_uri": "https://oauth2.googleapis.com/token",
                     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
                     "project_id": st.secrets["google"]["project_id"]
+                    # Notice: No "redirect_uris" key here
                 }
             }
     
-            # Define the OAuth flow with the required scopes, without setting redirect_uri here
+            # Define the OAuth flow with the required scopes
             flow = Flow.from_client_config(
                 client_config,
                 scopes=[
@@ -282,7 +283,7 @@ else:
             authorization_url, state = flow.authorization_url(
                 access_type='offline',
                 include_granted_scopes='true',
-                redirect_uri='http://localhost:8501/'  # Explicitly set redirect_uri here
+                redirect_uri='http://localhost:8501/'  # Set redirect_uri explicitly here
             )
             st.write(f"Visit this [link]({authorization_url}) to authenticate")
     
