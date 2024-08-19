@@ -239,9 +239,9 @@ else:
     
         try:
             # Load credentials from st.secrets
-            client_id = st.secrets["client_id"]
-            client_secret = st.secrets["client_secret"]
-            redirect_uri = st.secrets["redirect_uris"][0]
+            client_id = st.secrets["google_auth"]["client_id"]
+            client_secret = st.secrets["google_auth"]["client_secret"]
+            redirect_uri = st.secrets["google_auth"]["redirect_uris"][0]
     
             # Construct the JSON data
             json_data = {
