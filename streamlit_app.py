@@ -357,3 +357,6 @@ def update_google_sheet(credentials):
     gc = gspread.authorize(credentials)
     spreadsheet = gc.open(title)
     return spreadsheet
+    
+# Create a DataFrame from looks_list
+looks = pd.DataFrame(np.array(looks_list).reshape(-1, 1), columns=['look_id'])
