@@ -252,60 +252,62 @@ else:
         if 'credentials' in st.session_state:
             del st.session_state['credentials']
     
-        uploaded_file = st.file_uploader("Upload your Google JSON credentials file", type="json")
+        try:
+            # Access credentials from Streamlit secrets
+            client_id = st.secrets["google"]["client_id"]
+            client_secret = st.secrets["google"]["client_secret"]
     
-        if uploaded_file is not None:
-            try:
-                json_data = json.load(uploaded_file)
-                client_id = json_data["web"]["client_id"]
-                client_secret = json_data["web"]["client_secret"]
-                redirect_uri = json_data["web"]["redirect_uris"][0]
+            # Define the client configuration dictionary
+            client_config = {
+                "web": {
+                    "client_id": client_id,
+                    "client_secret": client_secret,
+                    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                    "redirect_uris": "http://localhost:8501/",
+                    "token_uri": "https://oauth2.googleapis.com/token",
+                    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                    "project_id": st.secrets["google"]["project_id"]
+                }
+            }
     
-                # Write the client secrets to a temporary file
-                with open('client_secrets.json', 'w') as f:
-                    json.dump(json_data, f)
+            # Define the OAuth flow with the required scopes
+            flow = Flow.from_client_config(
+                client_config,
+                scopes=[
+                    "https://www.googleapis.com/auth/spreadsheets",        # Full access to Google Sheets
+                    "https://www.googleapis.com/auth/drive.metadata.readonly" # Read-only access to file metadata in Google Drive
+                ]
+            )
     
-                # Define the OAuth flow with the required scopes
-                flow = Flow.from_client_secrets_file(
-                    'client_secrets.json',
-                    scopes=[
-                        "https://www.googleapis.com/auth/spreadsheets",        # Full access to Google Sheets
-                        "https://www.googleapis.com/auth/drive.metadata.readonly" # Read-only access to file metadata in Google Drive
-                    ],
-                    redirect_uri=redirect_uri
-                )
+            # Generate the authorization URL
+            authorization_url, state = flow.authorization_url(
+                access_type='offline',
+                include_granted_scopes='true'
+            )
+            st.write(f"Visit this [link]({authorization_url}) to authenticate")
     
-                # Generate the authorization URL
-                authorization_url, state = flow.authorization_url(
-                    access_type='offline',
-                    include_granted_scopes='true'
-                )
-                st.write(f"Visit this [link]({authorization_url}) to authenticate")
+            # Input field for the code received after authentication
+            code = st.text_input("Enter the code you received after authentication:")
     
-                # Input field for the code received after authentication
-                code = st.text_input("Enter the code you received after authentication:")
+            if code:
+                # Exchange the authorization code for a token
+                flow.fetch_token(code=code)
+                credentials = flow.credentials
     
-                if code:
-                    # Exchange the authorization code for a token
-                    flow.fetch_token(code=code)
-                    credentials = flow.credentials
+                st.success("Authentication successful")
+                st.write("Access Token:", credentials.token)
     
-                    st.success("Authentication successful")
-                    st.write("Access Token:", credentials.token)
+                # Store credentials in the session state
+                st.session_state.credentials = credentials
     
-                    # Store credentials in the session state
-                    st.session_state.credentials = credentials
+                # Allow the user to interact with Google Sheets
+                records = update_google_sheet(credentials)
     
-                    # Allow the user to interact with Google Sheets
-                    records = update_google_sheet(credentials)
+                st.write("Updated Spreadsheet Data:")
+                st.write(records)
     
-                    st.write("Updated Spreadsheet Data:")
-                    st.write(records)
-    
-            except json.JSONDecodeError as e:
-                st.error(f"Error decoding JSON file: {e}")
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
     
     if __name__ == "__main__":
         main()
