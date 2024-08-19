@@ -275,7 +275,6 @@ else:
 
     st.header("Checks!", divider=True)
     
-    # Define functions as in your code
     def generate_auth_token():
         data = {
             'client_id': client_id,
@@ -283,11 +282,12 @@ else:
         }
         auth_token = requests.post(f'{company_domain}:19999/api/4.0/login', data=data)
         return auth_token.json().get('access_token')
+    
     HEADERS = {
-    'Authorization': 'token {}'.format(generate_auth_token())
+        'Authorization': 'token {}'.format(generate_auth_token())
     }
     URL = f'{company_domain}:19999/api/4.0/'
-
+    
     def get_model_view(look_id):
         read_look = requests.get(f"{URL}looks/{look_id}", headers=HEADERS)
         json_data = read_look.json()
@@ -359,11 +359,6 @@ else:
         spreadsheet = gc.open(title)
         return spreadsheet
     
-    # Streamlit UI
-    st.title('Looker API and Google Sheets Integration')
-    
-    # Input for the number of looks
-    number_of_looks = st.number_input('Number of Looks:', min_value=1, max_value=100, value=number_of_looks)
     
     # Create a DataFrame from looks_list
     looks = pd.DataFrame(np.array(looks_list).reshape(-1, 1), columns=['look_id'])
@@ -397,4 +392,3 @@ else:
             st.error(f'Error accessing the spreadsheet: {str(e)}')
     else:
         st.warning('Google Sheets credentials are not provided.')
-    
