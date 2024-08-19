@@ -382,13 +382,3 @@ else:
         # Check filters and display result
         result = check_filters_in_explores(explore_fields, all_filter, group_filters, group_filter_assignments, exclude_filters_assignment)
         st.text(result)
-    
-    # Use provided credentials for Google Sheets
-    if credentials:
-        try:
-            spreadsheet = update_google_sheet(credentials)
-            st.success(f'Successfully accessed the spreadsheet: {spreadsheet.title}')
-        except Exception as e:
-            st.error(f'Error accessing the spreadsheet: {str(e)}')
-    else:
-        st.warning('Google Sheets credentials are not provided.')
