@@ -200,7 +200,7 @@ else:
     
             # Input field for the code received after authentication
             code = st.text_input("Enter the code generated in the URL")
-            st.write(""http://localhost:8501/?state=uTk5Jp5Qrl4xLGUrMqQbhGgoRWAg4W&code= :blue[4/0AQlEd8xkFHRczSkBp68VjoH2vsWS8T1vFF05Icfbmum10d4SDiwhHVqZH8ZCFXEMqFdCqw] &scope=https://www.googleapis.com/auth/drive.metadata.readonly%20https://www.googleapis.com/auth/spreadsheets'"
+            st.write(""http://localhost:8501/?state=uTk5Jp5Qrl4xLGUrMqQbhGgoRWAg4W&code= :blue[4/0AQlEd8xkFHRczSkBp68VjoH2vsWS8T1vFF05Icfbmum10d4SDiwhHVqZH8ZCFXEMqFdCqw] &scope=https://www.googleapis.com/auth/drive.metadata.readonly%20https://www.googleapis.com/auth/spreadsheets"
             
             if code:
                 # Exchange the authorization code for a token
