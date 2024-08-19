@@ -290,23 +290,137 @@ else:
                 sheet = spreadsheet.worksheet(tab_name)
 
 
-    def update_google_sheet(credentials):
+    st.title('Looker Filters Validation Tool')
+    
+    # Function to authenticate to Looker
+    def generate_auth_token(client_id, client_secret, company_domain):
+        data = {
+            'client_id': client_id,
+            'client_secret': client_secret
+        }
+        auth_token = requests.post(f'{company_domain}:19999/api/4.0/login', data=data)
+        return auth_token.json().get('access_token')
+    
+    # Function to get model and view
+    def get_model_view(look_id, URL, HEADERS):
+        read_look = requests.get(f"{URL}looks/{look_id}", headers=HEADERS)
+        json_data = read_look.json()
+        model = json_data.get('query', {}).get('model')
+        view = json_data.get('query', {}).get('view')
+        return model, view
+    
+    # Function to get fields from explore
+    def get_fields_from_explore(lookml_model_name, explore_name, URL, HEADERS):
+        read_look = requests.get(f"{URL}lookml_models/{lookml_model_name}/explores/{explore_name}", headers=HEADERS)
+        json_data = read_look.json()
+        dimensions = [item.get('name') for item in json_data.get('fields', {}).get('dimensions', [])]
+        measures = [item.get('name') for item in json_data.get('fields', {}).get('measures', [])]
+        parameters = [item.get('name') for item in json_data.get('fields', {}).get('parameters', [])]
+        return dimensions, measures, parameters
+    
+    # Function to check filters in explores
+    def check_filters_in_explores(explore_fields, all_filter, group_filters, group_filter_assignments, exclude_filters_assignment):
+        missing_filters = {}
+    
+        def check_filter_against_explores(filter_name, explore_key, explore_value):
+            if filter_name == '':
+                return
+            dimensions = explore_value['dimensions']
+            measures = explore_value['measures']
+            parameters = explore_value['parameters']
+            if (filter_name not in dimensions and
+                    filter_name not in measures and
+                    filter_name not in parameters):
+                if explore_key not in missing_filters:
+                    missing_filters[explore_key] = []
+                missing_filters[explore_key].append(filter_name)
+    
+        assignments = {}
+        for i, assignment in enumerate(group_filter_assignments):
+            for assignment_value in assignment:
+                if assignment_value is not None:
+                    if f'group_filter_{i}' not in assignments:
+                        assignments[f'group_filter_{i}'] = []
+                    assignments[f'group_filter_{i}'].append(assignment_value)
+    
+        for filter_key, filter_value in all_filter.items():
+            filter_name = filter_value['filter'][0]
+            for explore_key, explore_value in explore_fields.items():
+                check_filter_against_explores(filter_name, explore_key, explore_value)
+    
+        for group_key, group_filter in group_filters.items():
+            explore_keys = assignments.get(group_key)
+            if explore_keys is not None:
+                for explore_key in explore_keys:
+                    explore_value = explore_fields.get(explore_key)
+                    if explore_value:
+                        for filter_key, filter_value in group_filter.items():
+                            filter_name = filter_value['filter'][0]
+                            check_filter_against_explores(filter_name, explore_key, explore_value)
+    
+        if not missing_filters:
+            return "Filters can be applied to all Looks!"
+        else:
+            missing_messages = []
+            for explore_key, filters in missing_filters.items():
+                missing_messages.append(f"Warning: Missing/Incorrect filter(s) {filters} in explore from look #: {explore_key}")
+            return "\n".join(missing_messages)
+    
+    # Function to update Google Sheets
+    def update_google_sheet(credentials, title):
         # Authorize with gspread using the provided credentials
         gc = gspread.authorize(credentials)
         # Open the spreadsheet by title
         spreadsheet = gc.open(title)
-
-        # Create DataFrame from Look IDs
-        looks_df = pd.DataFrame(np.array(looks_list).reshape(-1, 1), columns=['look_id'])
-
-        # Select sheets and update cells
-        for i in range(number_of_looks):
-            tab_name = globals().get(f"tab_name_{i}")  # Get the tab name dynamically
-            if tab_name:
-                sheet = spreadsheet.worksheet(tab_name)
-
-    # Allow the user to interact with Google Sheets
-                records = update_google_sheet(credentials)
+        return spreadsheet
     
-                st.write("Updated Spreadsheet Data:")
-                st.write(records)
+    # Streamlit inputs
+    with st.form("settings_form"):
+        client_id = st.text_input("Looker Client ID")
+        client_secret = st.text_input("Looker Client Secret", type="password")
+        company_domain = st.text_input("Looker Company Domain (e.g., yourcompany.com)")
+        title = st.text_input("Google Sheets Title")
+        number_of_looks = st.number_input("Number of Looks", min_value=1, step=1)
+        
+        # Google Sheets credentials upload
+        creds_file = st.file_uploader("Upload Google Sheets credentials (JSON)", type="json")
+        
+        submit_button = st.form_submit_button("Submit")
+    
+    if submit_button:
+        if not (client_id and client_secret and company_domain and title and creds_file):
+            st.error("Please fill in all required fields and upload the credentials file.")
+        else:
+            # Authenticate Google Sheets
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_file.read(), ['https://www.googleapis.com/auth/spreadsheets'])
+            try:
+                spreadsheet = update_google_sheet(creds, title)
+                st.success(f"Successfully opened Google Sheet: {title}")
+            except Exception as e:
+                st.error(f"Failed to open Google Sheet: {e}")
+            
+            # Create DataFrame of Look IDs
+            looks = pd.DataFrame(np.array(looks_list).reshape(-1, 1), columns=['look_id'])
+            
+            # Authenticate to Looker
+            HEADERS = {'Authorization': f'token {generate_auth_token(client_id, client_secret, company_domain)}'}
+            URL = f'{company_domain}:19999/api/4.0/'
+            
+            # Get model and view for each look
+            explores = {}
+            for i in range(number_of_looks):
+                tab_name = f'name_tab_{i}'  # Replace with actual tab name retrieval logic
+                if tab_name:
+                    tab = spreadsheet.worksheet(tab_name)
+                    looks_id = looks.loc[i, 'look_id']
+                    explores[i] = get_model_view(looks_id, URL, HEADERS)
+            
+            # Get fields from each explore
+            explore_fields = {}
+            for key, (lookml_model_name, explore_name) in explores.items():
+                dimensions, measures, parameters = get_fields_from_explore(lookml_model_name, explore_name, URL, HEADERS)
+                explore_fields[key] = {'dimensions': dimensions, 'measures': measures, 'parameters': parameters}
+    
+            # Check filters
+            result = check_filters_in_explores(explore_fields, all_filter, group_filters, group_filter_assignments, exclude_filters_assignment)
+            st.text(result)
