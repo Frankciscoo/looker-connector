@@ -287,7 +287,7 @@ else:
         """,
         unsafe_allow_html=True)
 
-    st.header("Checks!", divider=True)
+    st.header("Filter check!", divider=True)
 
     def generate_auth_token():
         data = {
