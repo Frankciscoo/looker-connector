@@ -67,20 +67,60 @@ else:
         range_name = config_dict.get('range_name', '')
         return True
 
+    # def load_filters_from_file(file_content):
+    #     global all_filter, group_filter_0, group_filter_1, group_filter_2
+    #     filters = file_content.splitlines()
+    #     filter_dict = {}
+    #     current_group = None
+
+    #     for line in filters:
+    #         if line.startswith("Group"):
+    #             current_group = int(line.split()[1])
+    #             continue
+    #         if '=' in line:
+    #             key, value = line.split('=', 1)
+    #             key = key.strip()
+    #             value = value.strip().split(',')
+    #             if current_group is None:
+    #                 filter_dict[key] = {'filter': value, 'value': value}
+    #             else:
+    #                 if current_group == 0:
+    #                     group_filter_0[key] = {'filter': value, 'value': value}
+    #                 elif current_group == 1:
+    #                     group_filter_1[key] = {'filter': value, 'value': value}
+    #                 elif current_group == 2:
+    #                     group_filter_2[key] = {'filter': value, 'value': value}
+    #     all_filter = filter_dict
+    #     return True
+
     def load_filters_from_file(file_content):
         global all_filter, group_filter_0, group_filter_1, group_filter_2
         filters = file_content.splitlines()
         filter_dict = {}
-        current_group = None
-
+        current_group = None  # To keep track of the current group
+    
         for line in filters:
-            if line.startswith("Group"):
-                current_group = int(line.split()[1])
+            line = line.strip()  # Clean up any leading/trailing spaces
+    
+            # Skip empty lines
+            if not line:
                 continue
+    
+            print(f"Processing line: {line}")  # Debugging print
+    
+            # Check for group declaration
+            if line.startswith("Group"):
+                current_group = int(line.split()[1])  # Extract group number
+                print(f"Group detected: {current_group}")  # Debugging print
+                continue
+    
+            # Process key=value lines
             if '=' in line:
                 key, value = line.split('=', 1)
                 key = key.strip()
                 value = value.strip().split(',')
+                print(f"Key: {key}, Value: {value}")  # Debugging print
+    
                 if current_group is None:
                     filter_dict[key] = {'filter': value, 'value': value}
                 else:
@@ -90,8 +130,13 @@ else:
                         group_filter_1[key] = {'filter': value, 'value': value}
                     elif current_group == 2:
                         group_filter_2[key] = {'filter': value, 'value': value}
+    
+        # Assign filter_dict to all_filter after processing all lines
         all_filter = filter_dict
+        print(f"All filters after processing: {all_filter}")  # Debugging print
+    
         return True
+
 
     # Functions for gathering user input
     def gather_number_of_looks():
