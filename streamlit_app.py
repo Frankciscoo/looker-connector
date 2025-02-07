@@ -679,4 +679,7 @@ else:
             <p><strong>Group 2 Filters:</strong> {group_filter_2}</p>
             <p><strong>Group 0 Assignments:</strong> {group_filter_0_assignment}</p>
             <p><strong>Group 1 Assignments:</strong> {group_filter_1_assignment}</p>
-            <p><strong>Group 2 Assignments:</strong> {group_filter_
+            <p><strong>Group 2 Assignments:</strong> {group_filter_2_assignment}</p>
+            <p><strong>Exclude from Filters Assignments:</strong> {exclude_filters_assignment}</p>
+        </div>
+        """, unsafe_allow_html=True)
