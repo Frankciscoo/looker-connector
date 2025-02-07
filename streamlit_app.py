@@ -67,31 +67,63 @@ else:
         range_name = config_dict.get('range_name', '')
         return True
 
-    def load_filters_from_file(file_content):
-        global all_filter, group_filter_0, group_filter_1, group_filter_2
-        filters = file_content.splitlines()
-        filter_dict = {}
-        current_group = None
+    # def load_filters_from_file(file_content):
+    #     global all_filter, group_filter_0, group_filter_1, group_filter_2
+    #     filters = file_content.splitlines()
+    #     filter_dict = {}
+    #     current_group = None
 
-        for line in filters:
-            if line.startswith("Group"):
-                current_group = int(line.split()[1])
-                continue
-            if '=' in line:
-                key, value = line.split('=', 1)
-                key = key.strip()
-                value = value.strip().split(',')
-                if current_group is None:
-                    filter_dict[key] = {'filter': value, 'value': value}
-                else:
-                    if current_group == 0:
-                        group_filter_0[key] = {'filter': value, 'value': value}
-                    elif current_group == 1:
-                        group_filter_1[key] = {'filter': value, 'value': value}
-                    elif current_group == 2:
-                        group_filter_2[key] = {'filter': value, 'value': value}
-        all_filter = filter_dict
-        return True
+    #     for line in filters:
+    #         if line.startswith("Group"):
+    #             current_group = int(line.split()[1])
+    #             continue
+    #         if '=' in line:
+    #             key, value = line.split('=', 1)
+    #             key = key.strip()
+    #             value = value.strip().split(',')
+    #             if current_group is None:
+    #                 filter_dict[key] = {'filter': value, 'value': value}
+    #             else:
+    #                 if current_group == 0:
+    #                     group_filter_0[key] = {'filter': value, 'value': value}
+    #                 elif current_group == 1:
+    #                     group_filter_1[key] = {'filter': value, 'value': value}
+    #                 elif current_group == 2:
+    #                     group_filter_2[key] = {'filter': value, 'value': value}
+    #     all_filter = filter_dict
+    #     return True
+
+    def load_filters_from_file(file_content):
+    global all_filter, group_filter_0, group_filter_1, group_filter_2
+    filters = file_content.splitlines()
+    filter_dict = {}
+    current_group = None
+
+    for line in filters:
+        if line.startswith("Group"):
+            current_group = int(line.split()[1])
+            continue
+        if '=' in line:
+            key, value = line.split('=', 1)
+            key = key.strip()
+            value = value.strip().split(',')
+            # Remove empty filters
+            value = [v for v in value if v]  
+            if not value:
+                continue  
+
+            if current_group is None:
+                filter_dict[key] = {'filter': value, 'value': value}
+            else:
+                if current_group == 0:
+                    group_filter_0[key] = {'filter': value, 'value': value}
+                elif current_group == 1:
+                    group_filter_1[key] = {'filter': value, 'value': value}
+                elif current_group == 2:
+                    group_filter_2[key] = {'filter': value, 'value': value}
+
+    all_filter = filter_dict
+    return True
 
     # Functions for gathering user input
     def gather_number_of_looks():
