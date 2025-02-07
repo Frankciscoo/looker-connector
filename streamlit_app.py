@@ -7,29 +7,104 @@ from google_auth_oauthlib.flow import Flow
 import json
 import requests
 
+# # Initial declarations
+# number_of_looks = None
+# looks_list = []
+# look_dict = {}
+# all_filter = {}
+# group_filter_0 = {}
+# group_filter_1 = {}
+# group_filter_2 = {}
+# exclude_filters = {
+#     'all_1': {'filter': [''], 'value': ['']}
+# }
+# group_filter_0_assignment = []
+# group_filter_1_assignment = []
+# group_filter_2_assignment = []
+# exclude_filters_assignment = []
+# company_domain = ""  # Initialize to avoid NameError
+
+# group_filter_assignments = [
+#     group_filter_0_assignment,
+#     group_filter_1_assignment,
+#     group_filter_2_assignment
+# ]
+
+# group_filters = {
+#     'group_filter_0': group_filter_0,
+#     'group_filter_1': group_filter_1,
+#     'group_filter_2': group_filter_2
+# }
+
 # Initial declarations
-number_of_looks = None
-looks_list = []
-look_dict = {}
-all_filter = {}
-group_filter_0 = {}
-group_filter_1 = {}
-group_filter_2 = {}
-exclude_filters = {
+number_of_looks = None  # To store the number of looks, if needed later.
+looks_list = []  # List to store different looks
+look_dict = {}  # Dictionary to map look identifiers to specific data
+all_filter = {  # Initialize with empty structure for all_filter
+    'all_1': {'filter': [''], 'value': ['']},
+    'all_2': {'filter': [''], 'value': ['']},
+    'all_3': {'filter': [''], 'value': ['']},
+    'all_4': {'filter': [''], 'value': ['']},
+    'all_5': {'filter': [''], 'value': ['']},
+    'all_6': {'filter': [''], 'value': ['']},
+    'all_7': {'filter': [''], 'value': ['']},
+    'all_8': {'filter': [''], 'value': ['']},
+    'all_9': {'filter': [''], 'value': ['']},
+    'all_10': {'filter': [''], 'value': ['']}
+}
+group_filter_0 = {
+    'sing_1': {'filter': [''], 'value': ['']},
+    'sing_2': {'filter': [''], 'value': ['']},
+    'sing_3': {'filter': [''], 'value': ['']},
+    'sing_4': {'filter': [''], 'value': ['']},
+    'sing_5': {'filter': [''], 'value': ['']},
+    'sing_6': {'filter': [''], 'value': ['']},
+    'sing_7': {'filter': [''], 'value': ['']},
+    'sing_8': {'filter': [''], 'value': ['']},
+    'sing_9': {'filter': [''], 'value': ['']},
+    'sing_10': {'filter': [''], 'value': ['']}
+}  # Filter group 0
+group_filter_1 = {
+    'sing_1': {'filter': [''], 'value': ['']},
+    'sing_2': {'filter': [''], 'value': ['']},
+    'sing_3': {'filter': [''], 'value': ['']},
+    'sing_4': {'filter': [''], 'value': ['']},
+    'sing_5': {'filter': [''], 'value': ['']},
+    'sing_6': {'filter': [''], 'value': ['']},
+    'sing_7': {'filter': [''], 'value': ['']},
+    'sing_8': {'filter': [''], 'value': ['']},
+    'sing_9': {'filter': [''], 'value': ['']},
+    'sing_10': {'filter': [''], 'value': ['']}
+}  # Filter group 1
+group_filter_2 = {
+    'sing_1': {'filter': [''], 'value': ['']},
+    'sing_2': {'filter': [''], 'value': ['']},
+    'sing_3': {'filter': [''], 'value': ['']},
+    'sing_4': {'filter': [''], 'value': ['']},
+    'sing_5': {'filter': [''], 'value': ['']},
+    'sing_6': {'filter': [''], 'value': ['']},
+    'sing_7': {'filter': [''], 'value': ['']},
+    'sing_8': {'filter': [''], 'value': ['']},
+    'sing_9': {'filter': [''], 'value': ['']},
+    'sing_10': {'filter': [''], 'value': ['']}
+}  # Filter group 2
+exclude_filters = {  # Initial exclude filters
     'all_1': {'filter': [''], 'value': ['']}
 }
-group_filter_0_assignment = []
-group_filter_1_assignment = []
-group_filter_2_assignment = []
-exclude_filters_assignment = []
-company_domain = ""  # Initialize to avoid NameError
+group_filter_0_assignment = []  # Assignments for group 0
+group_filter_1_assignment = []  # Assignments for group 1
+group_filter_2_assignment = []  # Assignments for group 2
+exclude_filters_assignment = []  # Assignment for exclude filters
+company_domain = ""  # Company domain initialized as an empty string
 
+# Group assignment list to dynamically store group filter assignments
 group_filter_assignments = [
     group_filter_0_assignment,
     group_filter_1_assignment,
     group_filter_2_assignment
 ]
 
+# Group filters dictionary to map the group name to the actual group filter
 group_filters = {
     'group_filter_0': group_filter_0,
     'group_filter_1': group_filter_1,
