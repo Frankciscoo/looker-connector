@@ -67,60 +67,20 @@ else:
         range_name = config_dict.get('range_name', '')
         return True
 
-    # def load_filters_from_file(file_content):
-    #     global all_filter, group_filter_0, group_filter_1, group_filter_2
-    #     filters = file_content.splitlines()
-    #     filter_dict = {}
-    #     current_group = None
-
-    #     for line in filters:
-    #         if line.startswith("Group"):
-    #             current_group = int(line.split()[1])
-    #             continue
-    #         if '=' in line:
-    #             key, value = line.split('=', 1)
-    #             key = key.strip()
-    #             value = value.strip().split(',')
-    #             if current_group is None:
-    #                 filter_dict[key] = {'filter': value, 'value': value}
-    #             else:
-    #                 if current_group == 0:
-    #                     group_filter_0[key] = {'filter': value, 'value': value}
-    #                 elif current_group == 1:
-    #                     group_filter_1[key] = {'filter': value, 'value': value}
-    #                 elif current_group == 2:
-    #                     group_filter_2[key] = {'filter': value, 'value': value}
-    #     all_filter = filter_dict
-    #     return True
-
     def load_filters_from_file(file_content):
         global all_filter, group_filter_0, group_filter_1, group_filter_2
         filters = file_content.splitlines()
         filter_dict = {}
-        current_group = None  # To keep track of the current group
-    
+        current_group = None
+
         for line in filters:
-            line = line.strip()  # Clean up any leading/trailing spaces
-    
-            # Skip empty lines
-            if not line:
-                continue
-    
-            print(f"Processing line: {line}")  # Debugging print
-    
-            # Check for group declaration
             if line.startswith("Group"):
-                current_group = int(line.split()[1])  # Extract group number
-                print(f"Group detected: {current_group}")  # Debugging print
+                current_group = int(line.split()[1])
                 continue
-    
-            # Process key=value lines
             if '=' in line:
                 key, value = line.split('=', 1)
                 key = key.strip()
                 value = value.strip().split(',')
-                print(f"Key: {key}, Value: {value}")  # Debugging print
-    
                 if current_group is None:
                     filter_dict[key] = {'filter': value, 'value': value}
                 else:
@@ -130,13 +90,8 @@ else:
                         group_filter_1[key] = {'filter': value, 'value': value}
                     elif current_group == 2:
                         group_filter_2[key] = {'filter': value, 'value': value}
-    
-        # Assign filter_dict to all_filter after processing all lines
         all_filter = filter_dict
-        print(f"All filters after processing: {all_filter}")  # Debugging print
-    
         return True
-
 
     # Functions for gathering user input
     def gather_number_of_looks():
@@ -159,28 +114,69 @@ else:
             if tab_name:
                 tab_names.append(tab_name)
 
+    # def gather_filters_and_values():
+    #     global all_filter
+    #     num_filters = st.number_input("Enter the :blue[number of filters] to be applied to :blue[all Looks]:", min_value=0, step=1)
+    #     st.error("These filters will be applied to all Looks unless they are marked as 'Exclude from filters", icon="⚠️")
+    #     all_filter = {}  # Initialize the dictionary to avoid appending to old values
+    #     for i in range(num_filters):
+    #         filter_key = f"all_{i+1}"
+    #         filter_input = st.text_input(f"Enter filter 'view_name.field_name' {i+1}:").strip()
+    #         value_input = st.text_input(f"Enter value for filter {i+1}:").strip()
+    #         if filter_input and value_input:
+    #             all_filter[filter_key] = {'filter': [filter_input], 'value': [value_input]}
+
+    # def gather_filters_and_values_group(group_num):
+    #     global group_filter_0, group_filter_1, group_filter_2
+    #     group_filters = [group_filter_0, group_filter_1, group_filter_2]
+    #     num_filters = st.number_input(f"Enter the :blue[number of filters] to be applied to Looks in :blue[group {group_num}]:", min_value=0, step=1)
+    #     for i in range(num_filters):
+    #         filter_key = f"sing_{i+1}"
+    #         filter_input = st.text_input(f"Enter :blue[filter 'view_name.field_name' {i+1}] for :blue[group {group_num}]:").strip()
+    #         value_input = st.text_input(f"Enter :blue[value for filter {i+1}] for :blue[group {group_num}]:").strip()
+    #         if filter_input and value_input:
+    #             group_filters[group_num][filter_key] = {'filter': [filter_input], 'value': [value_input]}
+
     def gather_filters_and_values():
         global all_filter
+        # Initialize all_filter if it's not already initialized
+        if not all_filter:
+            all_filter = {}  # Ensure it's initialized only once
+    
         num_filters = st.number_input("Enter the :blue[number of filters] to be applied to :blue[all Looks]:", min_value=0, step=1)
-        st.error("These filters will be applied to all Looks unless they are marked as 'Exclude from filters", icon="⚠️")
-        all_filter = {}  # Initialize the dictionary to avoid appending to old values
+        st.error("These filters will be applied to all Looks unless they are marked as 'Exclude from filters'", icon="⚠️")
+        
         for i in range(num_filters):
             filter_key = f"all_{i+1}"
             filter_input = st.text_input(f"Enter filter 'view_name.field_name' {i+1}:").strip()
             value_input = st.text_input(f"Enter value for filter {i+1}:").strip()
             if filter_input and value_input:
                 all_filter[filter_key] = {'filter': [filter_input], 'value': [value_input]}
+            elif filter_input or value_input:  # Handle case where only one of the fields is empty
+                st.error(f"Both filter and value must be provided for filter {i+1}.", icon="🚨")
 
     def gather_filters_and_values_group(group_num):
         global group_filter_0, group_filter_1, group_filter_2
+        # Map group numbers to the respective group filters
         group_filters = [group_filter_0, group_filter_1, group_filter_2]
+        
+        # Ensure group_num is within the valid range (0, 1, 2)
+        if group_num not in [0, 1, 2]:
+            st.error("Invalid group number. It should be 0, 1, or 2.")
+            return
+    
         num_filters = st.number_input(f"Enter the :blue[number of filters] to be applied to Looks in :blue[group {group_num}]:", min_value=0, step=1)
+        
         for i in range(num_filters):
             filter_key = f"sing_{i+1}"
             filter_input = st.text_input(f"Enter :blue[filter 'view_name.field_name' {i+1}] for :blue[group {group_num}]:").strip()
             value_input = st.text_input(f"Enter :blue[value for filter {i+1}] for :blue[group {group_num}]:").strip()
+            
             if filter_input and value_input:
                 group_filters[group_num][filter_key] = {'filter': [filter_input], 'value': [value_input]}
+            elif filter_input or value_input:  # Handle case where only one of the fields is empty
+                st.error(f"Both filter and value must be provided for filter {i+1} in group {group_num}.", icon="🚨")
+
 
     def assign_look_ids_to_groups():
         global group_filter_0_assignment, group_filter_1_assignment, group_filter_2_assignment, exclude_filters_assignment
